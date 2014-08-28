@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ProdSalesMapper">
+    <!-- 常用sql定义 -->
+    <sql id="prodSales_selector">
+        SELECT id,prod_id,
+                sale_count,send_count,
+                back_count,create_time,
+                update_time,delete_time,
+                is_delete
+        FROM t_prod_sales
+    </sql>
+    <!-- ResultMap定义 -->
+    <resultMap id="ProdSalesResultMap" type="ProdSales">
+        <id property="id" column="id"/>
+        <result property="prodId" column="prod_id"/>
+        <result property="saleCount" column="sale_count"/>
+        <result property="sendCount" column="send_count"/>
+        <result property="backCount" column="back_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+
+     <!--查找所有销售记录-->
+    <select id="findAll" resultType="ProdSales">
+        <include refid="prodSales_selector" /> WHERE is_delete = 0
+    </select>
+
+    <!--根据prodId查找销售记录-->
+    <select id="findProdSalesByProdId" parameterType="java.lang.Integer" resultType="ProdSales">
+        <include refid="prodSales_selector"/> where prod_id = #{prodId}
+    </select>
+    <!--根据prodId查找销售记录,用来判断是否可以删除-->
+    <select id="findProdSalesByIsDelete" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        select sale_count+send_count+back_count  from t_prod_sales where prod_id = #{prodId}
+    </select>
+
+    <!--根据对象更新销售记录-->
+    <update id="updateProdSalesSaleCount" parameterType="ProdSales">
+        UPDATE t_prod_sales SET sale_count = #{saleCount}, update_time=now()
+        WHERE prod_id = #{prodId}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,53 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: amos
+  Date: 13-12-5
+  Time: 下午5:55
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="ctxPath"><%=request.getContextPath()%></c:set>
+<c:if test="${ctxPath == '/'}"><c:set var="ctxPath" value="" /></c:if>
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<shiro:guest>
+    Please <a href="login.action">login</a>.
+</shiro:guest>
+<shiro:user>
+    Hello, <shiro:principal property="username"/>, how are you today?
+</shiro:user>
+
+<shiro:hasPermission name="/order/list">
+    <table>
+        <tr>
+            <th>订单号</th><th>订购物品</th>
+        </tr>
+        <tr>
+            <td>1</td><td>物品1</td>
+        </tr>
+        <tr>
+            <td>2</td><td>物品2</td>
+        </tr>
+    </table>
+</shiro:hasPermission>
+
+<div>操作:
+    <shiro:hasPermission name="/order/add">
+        <input type="button" value="添加订单" onclick="javascript:window.location.href='${ctxPath}/order/add.action?text=addOrder'" />
+    </shiro:hasPermission>
+    <shiro:hasPermission name="/order/update">
+    <input type="button" value="修改订单" onclick="javascript:window.location.href='${ctxPath}/order/update.action?text=updateOrder'" />
+    </shiro:hasPermission>
+    <shiro:hasPermission name="/order/delete">
+    <input type="button" value="删除订单" onclick="javascript:window.location.href='${ctxPath}/order/delete.action?text=deleteOrder'" />
+    </shiro:hasPermission>
+</div>
+
+</body>
+</html>

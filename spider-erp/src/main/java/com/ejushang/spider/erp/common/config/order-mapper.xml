@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.OrderMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_order</sql>
+    <sql id="order_selector">
+         id,order_no,order_type,order_status,total_fee,discount_fee,point_fee,has_post_fee,available_confirm_fee,
+         real_point_fee,payment,post_fee,received_payment,adjust_fee,buyer_id,buyer_message,remark,receiver_name,receiver_phone,
+        receiver_mobile,receiver_zip,receiver_state,receiver_city,receiver_district,receiver_address,shipping_no,
+        shipping_comp,repo_id,repo_name,buy_time,pay_time,confirm_time,confirm_user_id,confirm_user,print_time,
+        print_user_id,print_user,inspection_time,inspection_user_id,delivery_time,delivery_user_id,receipt_time,
+        out_platform_type,out_order_no,shop_id,shop_name,need_invoice,invoice_name,invoice_content,create_time,
+        update_time,is_delete, original_order_id, split_status
+    </sql>
+
+
+    <!-- 订单新增 -->
+    <insert id="saveOrder" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO<include refid="table_name"/>(order_No , order_type , order_status , total_fee ,discount_fee,
+        point_fee,has_post_fee,available_confirm_fee,real_point_fee,payment,post_fee,received_payment,adjust_fee, buyer_id ,
+        buyer_message , remark , receiver_name , receiver_phone , receiver_mobile , receiver_zip , receiver_state ,
+        receiver_city , receiver_district , receiver_address , shipping_no , shipping_comp , repo_id , repo_name ,
+        buy_time , pay_time , confirm_time , confirm_user_id , confirm_user , print_time , print_user_id , print_user ,
+        out_platform_type , out_order_no , shop_id , shop_name , need_invoice , invoice_name , invoice_content ,
+        inspection_time,inspection_user_id,delivery_time,delivery_user_id , receipt_time , create_time , update_time,
+        original_order_id, split_status
+        )
+        VALUES (#{orderNo},#{orderType},#{orderStatus},#{totalFee},#{discountFee},#{pointFee},#{hasPostFee},
+        #{availableConfirmFee},#{realPointFee},#{payment},#{postFee},#{receivedPayment},#{adjustFee},#{buyerId},#{buyerMessage},#{remark},
+        #{receiverName},#{receiverPhone},#{receiverMobile},#{receiverZip},#{receiverState},#{receiverCity},
+        #{receiverDistrict},#{receiverAddress},#{shippingNo},#{shippingComp},#{repoId},#{repoName},#{buyTime},
+        #{payTime},#{confirmTime},#{confirmUserId},#{confirmUser},#{printTime},#{printUserId},#{printUser},
+        #{outPlatformType},#{outOrderNo},#{shopId},#{shopName},#{needInvoice},#{invoiceName},#{invoiceContent},
+        #{inspectionTime},#{inspectionUserId},#{deliveryTime},#{deliveryUserId},#{receiptTime},now(),now(),
+        #{originalOrderId}, #{splitStatus}
+        )
+
+    </insert>
+
+
+    <!-- 订单更新 -->
+
+    <!-- 订单删除 -->
+    <delete id="deleteOrder" parameterType="Order">
+        UPDATE
+        <include refid="table_name"/>
+        SET is_delete = 1 WHERE order_no = #{orderNo}
+    </delete>
+
+
+    <!-- 订单查询 -->
+    <select id="findOrders" resultType="Order">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        t_order
+        where is_delete=0
+
+
+    </select>
+    <select id="findOrderCountByOrderQuery" parameterType="OrderQuery" resultType="java.lang.Integer">
+
+        select count(1) from (SELECT o.id
+
+        from
+        <include refid="table_name"/>
+        o left join t_order_item i on o.id=i.order_id
+        where   o.is_delete=0
+        <if test="orderStatus !=null and orderStatus!='' and orderStatus!='null' ">
+            and o.order_status =#{orderStatus}
+        </if>
+
+        <if test="orderType !=null and orderType!='' and orderType!='null'  ">
+            and o.order_type =#{orderType}
+        </if>
+
+        <if test="dateCondition != null and dateCondition !=''  and dateType !=null and dateType!='null' and dateType!='all' ">
+            ${dateCondition}
+        </if>
+
+        <if test="shopId !=null and shopId!='' and shopId !='null'   ">
+            and o.shop_id =#{shopId}
+        </if>
+
+
+        <if test="shippingComp !=null and shippingComp!='' and shippingComp !='null'  ">
+            and o.shipping_comp =#{shippingComp}
+        </if>
+        <if test="storageName !=null and storageName!='' and storageName !='null'  ">
+            and o.repo_id =#{storageName}
+        </if>
+        <if test=" repoId !=null   ">
+            and o.repo_id =#{repoId}
+        </if>
+        <if test="conditionValue !='' and conditionValue !=null   ">
+            and ${lastCondition}
+
+        </if>
+        <if test="conditionValue2 !='' and conditionValue2 !=null   ">
+            and ${newCondition}
+        </if>
+        <if test="id !=null">
+            and id=#{id}
+        </if>
+
+        group by o.id
+        order by o.buy_time desc
+        ) t
+
+    </select>
+
+    <select id="findOrderByOrderQuery" parameterType="OrderQuery" resultType="Order">
+
+
+        SELECT o.id , o.order_status , o.order_no , o.total_fee ,o.discount_fee,o.point_fee,o.has_post_fee,
+        o.available_confirm_fee,o.real_point_fee,o.payment,o.post_fee,o.received_payment,o.adjust_fee, o.out_order_no,
+        o.buyer_message , o.remark , o.buyer_id , o.receiver_state , o.receiver_city ,
+        o.receiver_district , o.receiver_name , o.receiver_address , o.receiver_zip ,
+        o.receiver_mobile , o.receiver_phone , o.shipping_no , o.shipping_comp ,
+        o.repo_name , o.repo_id, o.buy_time , o.pay_time , o.confirm_time , o.confirm_user,
+        o.print_time , o.print_user ,o.shop_id, o.shop_name , o.invoice_name , o.invoice_content
+        from t_order o ,
+        (select o.id  from
+        <include refid="table_name"/>
+        o left join t_order_item i on o.id=i.order_id
+        where   o.is_delete=0
+        <if test="orderStatus !=null and orderStatus!='' and orderStatus!='null' ">
+            and o.order_status =#{orderStatus}
+        </if>
+
+        <if test="orderType !=null and orderType!='' and orderType!='null'  ">
+            and o.order_type =#{orderType}
+        </if>
+
+        <if test="dateCondition != null and dateCondition !=''  and dateType !=null and dateType!='null' and dateType!='all' ">
+            ${dateCondition}
+        </if>
+
+        <if test="shopId !=null and shopId!='' and shopId !='null'   ">
+            and o.shop_id =#{shopId}
+        </if>
+
+
+        <if test="shippingComp !=null and shippingComp!='' and shippingComp !='null'  ">
+            and o.shipping_comp =#{shippingComp}
+        </if>
+        <if test="storageName !=null and storageName!='' and storageName !='null'  ">
+            and o.repo_id =#{storageName}
+        </if>
+        <if test=" repoId !=null   ">
+            and o.repo_id =#{repoId}
+        </if>
+        <if test="conditionValue !='' and conditionValue !=null   ">
+            and ${lastCondition}
+
+        </if>
+        <if test="conditionValue2 !='' and conditionValue2 !=null   ">
+            and ${newCondition}
+        </if>
+
+        group by o.id
+        order by o.buy_time desc
+        limit #{start},#{limit}) t2
+        where o.id=t2.id
+    </select>
+
+
+    <select id="findOrderByOrderQueryNoPage" parameterType="OrderQuery" resultType="Order">
+
+
+        SELECT o.id , o.order_status , o.order_no , o.total_fee ,o.discount_fee,o.point_fee,o.has_post_fee,
+        o.available_confirm_fee,o.real_point_fee,o.payment,o.post_fee,o.received_payment,o.adjust_fee, o.out_order_no,
+        o.buyer_message , o.remark , o.buyer_id , o.receiver_state , o.receiver_city ,
+        o.receiver_district , o.receiver_name , o.receiver_address , o.receiver_zip ,
+        o.receiver_mobile , o.receiver_phone , o.shipping_no , o.shipping_comp ,
+        o.repo_name , o.repo_id, o.buy_time , o.pay_time , o.confirm_time , o.confirm_user,
+        o.print_time , o.print_user ,o.shop_id, o.shop_name , o.invoice_name , o.invoice_content
+        from t_order o ,
+        (select o.id  from
+        <include refid="table_name"/>
+        o left join t_order_item i on o.id=i.order_id
+        where   o.is_delete=0
+        <if test="orderStatus !=null and orderStatus!='' and orderStatus!='null' ">
+            and o.order_status =#{orderStatus}
+        </if>
+
+        <if test="orderType !=null and orderType!='' and orderType!='null'  ">
+            and o.order_type =#{orderType}
+        </if>
+
+        <if test="dateCondition != null and dateCondition !=''  and dateType !=null and dateType!='null' and dateType!='all' ">
+            ${dateCondition}
+        </if>
+
+        <if test="shopId !=null and shopId!='' and shopId !='null'   ">
+            and o.shop_id =#{shopId}
+        </if>
+
+
+        <if test="shippingComp !=null and shippingComp!='' and shippingComp !='null'  ">
+            and o.shipping_comp =#{shippingComp}
+        </if>
+        <if test="storageName !=null and storageName!='' and storageName !='null'  ">
+            and o.repo_id =#{storageName}
+        </if>
+        <if test=" repoId !=null   ">
+            and o.repo_id =#{repoId}
+        </if>
+        <if test="conditionValue !='' and conditionValue !=null   ">
+            and ${lastCondition}
+
+        </if>
+        <if test="conditionValue2 !='' and conditionValue2 !=null   ">
+            and ${newCondition}
+        </if>
+
+        group by o.id
+        order by o.buy_time desc
+        where o.id=t2.id
+    </select>
+
+
+
+    <!-- 查询单个订单-->
+    <select id="findOrderByOrderNo" resultType="Order" parameterType="java.lang.String">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        <include refid="table_name"/>
+        where is_delete=0 and order_no=#{orderNo}
+    </select>
+    <select id="findOrderById" resultType="Order" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        t_order
+        where is_delete=0 and id=#{id}
+    </select>
+
+    <!-- 根据物流单号查找订单 -->
+    <select id="findOrderByShoppingNo" resultType="Order" parameterType="java.lang.String">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        <include refid="table_name"/>
+        WHERE is_delete=0 AND order_status = 'PRINTED' AND shipping_no = #{shippingNo}
+    </select>
+
+    <!-- 根据id查找订单状态 -->
+    <select id="findOrderStatusById" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT order_status FROM
+        <include refid="table_name"/>
+        WHERE is_delete = 0 AND id = #{id}
+    </select>
+    <!-- 根据id查找订单状态 -->
+    <select id="findOrderByStatus" resultType="Order" parameterType="java.lang.String">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        <include refid="table_name"/>
+        WHERE is_delete = 0 AND order_status = #{orderStatus}
+    </select>
+
+
+
+
+    <!--生成物流号-->
+    <update id="updateOrderShipping" parameterType="Order">
+        update
+        <include refid="table_name"/>
+        set shipping_no = #{shippingNo},shipping_comp = #{shippingComp} ,update_time=now()
+        where id=#{id}
+    </update>
+    <!-- 更新确认、打印、验货人与时间 blo -->
+    <update id="updateOrderStatus" parameterType="Order">
+        UPDATE t_order
+        SET order_status=#{orderStatus},shipping_no=#{shippingNo},
+            confirm_user_id=#{confirmUserId},confirm_user=#{confirmUser},confirm_time=#{confirmTime},
+            print_user_id=#{printUserId},print_user =#{printUser},print_time=#{printTime},
+            inspection_user_id=#{inspectionUserId},inspection_time=#{inspectionTime},
+            delivery_user_id=#{deliveryUserId},delivery_time=#{deliveryTime},
+            update_time=now()
+        WHERE id=#{id}
+    </update>
+    <update id="updateOrderStatusByOrder" parameterType="Order">
+        update
+        <include refid="table_name"/>
+        <set>
+            <if test=" shippingComp !=null and shippingComp!=''">
+                shipping_comp = #{shippingComp} ,
+            </if>
+            <if test=" shippingNo !=null and shippingNo!=''">
+                shipping_no = #{shippingNo} ,
+            </if>
+            <if test="  shopName !=null and shopName!=''">
+                shop_name = #{shopName} ,
+
+            </if>
+            <if test=" repoName !=null and repoName!=''">
+                repo_name = #{repoName},
+
+            </if>
+            <if test="  repoId  !=null">
+                repo_id = #{repoId} ,
+
+            </if>
+            update_time=now()
+
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateOrderByOrder" parameterType="Order">
+        update
+        <include refid="table_name"/>
+
+        <set>
+
+            <if test="  totalFee !=null ">
+                total_fee = #{totalFee} ,
+            </if>
+            <if test="discountFee!=null">
+                discount_fee = #{discountFee} ,
+            </if>
+            <if test="pointFee!=null">
+                point_fee = #{pointFee} ,
+            </if>
+            <if test="hasPostFee!=null">
+                has_post_fee = #{hasPostFee} ,
+            </if>
+            <if test="availableConfirmFee!=null">
+                available_confirm_fee = #{availableConfirmFee} ,
+            </if>
+            <if test="realPointFee!=null">
+                real_point_fee = #{realPointFee} ,
+            </if>
+            <if test="payment!=null">
+                payment = #{payment} ,
+            </if>
+            <if test="postFee!=null">
+                post_fee = #{postFee} ,
+            </if>
+            <if test="receivedPayment!=null">
+                received_payment = #{receivedPayment} ,
+            </if>
+            <if test="adjustFee!=null">
+                adjust_fee = #{adjustFee} ,
+            </if>
+
+            <if test=" buyerMessage !=null ">
+                buyer_message = #{buyerMessage} ,
+            </if>
+            <if test=" remark !=null ">
+                remark = #{remark} ,
+            </if>
+            <if test=" receiverState !=null ">
+                receiver_state = #{receiverState} ,
+            </if>
+            <if test=" receiverCity !=null ">
+                receiver_city = #{receiverCity} ,
+            </if>
+            <if test="  receiverDistrict !=null ">
+                receiver_district = #{receiverDistrict} ,
+            </if>
+            <if test="  receiverAddress !=null ">
+                receiver_address = #{receiverAddress} ,
+            </if>
+            <if test="  receiverName !=null ">
+                receiver_name = #{receiverName} ,
+            </if>
+            <if test="receiverZip !=null ">
+                receiver_zip = #{receiverZip} ,
+            </if>
+            <if test="  receiverPhone !=null ">
+                receiver_phone = #{receiverPhone} ,
+            </if>
+            <if test="  receiverMobile !=null ">
+                receiver_mobile = #{receiverMobile} ,
+            </if>
+
+            <if test=" shippingComp !=null ">
+                shipping_comp = #{shippingComp} ,
+            </if>
+            <if test="shippingNo !=null ">
+                shipping_no = #{shippingNo} ,
+            </if>
+            <if test="repoName !=null ">
+                repo_name = #{repoName},
+
+            </if>
+            <if test="  repoId  !=null">
+                repo_id = #{repoId} ,
+
+            </if>
+            <if test="repoName != null">
+                repo_name = #{repoName} ,
+            </if>
+            <if test="splitStatus != null">
+                split_status = #{splitStatus} ,
+            </if>
+            update_time=now()
+        </set>
+        where 1=1
+        <if test="id !=null">
+            and id=#{id}
+        </if>
+        <if test="orderNo !=null and orderNo!=''">
+            and order_no=#{orderNo}
+        </if>
+    </update>
+
+
+    <update id="deleteOrderById" parameterType="java.lang.Integer">
+        update
+        <include refid="table_name"/>
+        SET is_delete=1
+        where id=#{id}
+    </update>
+
+    <!-- 批量修改订单备注 -->
+    <update id="updateOrderRemark">
+        update <include refid="table_name"/> set remark = #{remark} where id in
+        <foreach item="item" index="index" collection="orderIds"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 查询 指定订单类型 指定订单状态 小于指定付款时间 的订单号 -->
+    <select id="findOrderNoByStatusAndWarnDate" resultType="java.util.Map" parameterType="java.util.Map">
+        select id, order_no as orderNo, DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') as payTime, order_status as
+        orderStatus
+        from
+        <include refid="table_name"/>
+        where is_delete = 0
+        <![CDATA[ and pay_time < #{triggerWarnDate} ]]>
+
+        and order_status in
+        <foreach item="item" index="index" collection="orderStatusList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        and order_type in
+        <foreach item="item" index="index" collection="orderTypeList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by pay_time
+    </select>
+
+    <!-- 查询 指定订单类型 指定订单状态 小于指定发货日 的 订单号 及 物流编号 -->
+    <select id="findOrderNoByStatusAndTypeAndWarnDate" resultType="java.util.Map" parameterType="java.util.Map">
+        select id, order_no as orderNo, shipping_no as expressNo, shipping_comp as expressCompany,
+        DATE_FORMAT(delivery_time, '%Y-%m-%d %H:%i:%s') as deliveryTime
+        from
+        <include refid="table_name"/>
+        where is_delete = 0
+
+        and order_status = #{orderStatus}
+
+        and order_type in
+        <foreach item="item" index="index" collection="orderTypeList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        <![CDATA[ and delivery_time < #{triggerWarnDate} ]]>
+
+        order by delivery_time
+    </select>
+    <select id="findOrderByOutOrderNo" resultType="Order" parameterType="java.lang.String">
+        SELECT
+        <include refid="order_selector"/>
+        FROM
+        <include refid="table_name"/>
+        where out_order_no=#{outOrderNo}
+    </select>
+
+</mapper>

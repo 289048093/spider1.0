@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.ResourceMapper">
+
+    <cache readOnly="true" />
+
+	<sql id='table_name'>t_resource</sql>
+
+	<resultMap id="resourceMap" type="com.ejushang.spider.domain.Resource">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="url" column="url"/>
+		<result property="uniqueKey" column="unique_key"/>
+        <result property="iconCls" column="icon_cls"/>
+        <result property="module" column="module"/>
+        <result property="entryOperation" column="entry_operation"/>
+	</resultMap>
+
+	<select id="get" resultMap="resourceMap">
+		SELECT * FROM <include refid="table_name" /> WHERE id = #{id}
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (id, name, url, unique_key, icon_cls, module, entry_operation)
+		values ( #{id}, #{name}, #{url}, #{uniqueKey}, #{iconCls}, #{module}, #{entryOperation})
+	</insert>
+
+	<update id="update">
+		update <include refid="table_name" /> set name=#{name}, url=#{url},
+        module=#{module}, icon_cls=#{iconCls}, entry_operation=#{entryOperation}, unique_key=#{uniqueKey} where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete FROM <include refid="table_name" /> WHERE id = #{id}
+	</delete>
+
+	<select id="findAll" resultMap="resourceMap">
+		SELECT * FROM <include refid="table_name" />
+	</select>
+
+</mapper>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.OrderItemMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_order_item</sql>
+
+    <!-- ResultMap定义 -->
+    <resultMap id="orderItemMap" type="com.ejushang.spider.domain.OrderItem">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="prodId" column="prod_id"/>
+        <result property="prodCode" column="prod_code"/>
+        <result property="skuCode" column="sku_code"/>
+        <result property="prodName" column="prod_name"/>
+        <result property="prodPrice" column="prod_price"/>
+        <result property="prodCount" column="prod_count"/>
+        <result property="totalFee" column="total_fee"/>
+        <result property="actualFee" column="actual_fee"/>
+        <result property="discountFee" column="discount_fee"/>
+        <result property="adjustFee" column="adjust_fee"/>
+        <result property="divideOrderFee" column="divide_order_fee"/>
+        <result property="partMjzDiscount" column="part_mjz_discount"/>
+        <result property="postFee" column="post_fee"/>
+        <result property="outOrderNo" column="out_order_no"/>
+        <result property="itemType" column="item_type"/>
+        <result property="priceDescription" column="price_description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="orderId" column="order_id"/>
+        <result property="subOutOrderNo" column="sub_out_order_no"/>
+    </resultMap>
+
+    <!-- 订单项新增 -->
+    <insert id="saveOrderItem" parameterType="OrderItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO<include refid="table_name"/>(order_no , prod_id , prod_code , sku_code , prod_name ,
+        prod_price , prod_count , total_fee , actual_fee ,discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,
+        post_fee,out_order_no , item_type , price_description ,
+        create_time,update_time,order_id,sub_out_order_no
+        )
+        VALUES (#{orderNo} , #{prodId} , #{prodCode} , #{skuCode} , #{prodName} , #{prodPrice} , #{prodCount} ,
+        #{totalFee} , #{actualFee} ,#{discountFee},#{adjustFee},#{divideOrderFee},#{partMjzDiscount},
+        #{postFee},#{outOrderNo} , #{itemType} , #{priceDescription} , now() , now() , #{orderId}, #{subOutOrderNo}
+        )
+    </insert>
+
+    <!-- 订单项更新 -->
+    <update id="updateOrderItem" parameterType="OrderItem">
+        UPDATE
+        <include refid="table_name"/>
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo},
+            </if>
+            <if test="orderId!=null">
+                order_id=#{orderId},
+            </if>
+            <if test="prodId != null">
+                prod_id = #{prodId},
+            </if>
+            <if test="prodCode != null and prodCode != ''">
+                prod_code = #{prodCode},
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                sku_code = #{skuCode},
+            </if>
+            <if test="prodName != null and prodName != ''">
+                prod_name = #{prodName},
+            </if>
+            <if test="prodPrice != null">
+                prod_price = #{prodPrice},
+            </if>
+            <if test="prodCount != null">
+                prod_count = #{prodCount},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee},
+            </if>
+            <if test="actualFee != null">
+                actual_fee = #{actualFee},
+            </if>
+            <if test="postFee!=null">
+                post_fee = #{postFee},
+
+            </if>
+            <if test="discountFee!=null">
+                discount_fee = #{discountFee},
+            </if>
+            <if test="adjustFee!=null">
+                adjust_fee = #{adjustFee},
+            </if>
+            <if test="divideOrderFee!=null">
+                divide_order_fee = #{divideOrderFee},
+            </if>
+            <if test="partMjzDiscount!=null">
+                part_mjz_discount = #{partMjzDiscount},
+            </if>
+
+            <if test="outOrderNo != null and outOrderNo != ''">
+                out_order_no = #{outOrderNo},
+            </if>
+            <if test="itemType != null and itemType != ''">
+                item_type = #{itemType},
+            </if>
+            <if test="priceDescription != null and priceDescription != ''">
+                price_description = #{priceDescription},
+            </if>
+            update_time = now(),
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+
+
+        </trim>
+    </update>
+
+    <!-- 订单项删除 -->
+    <delete id="deleteOrderItem" parameterType="OrderItem">
+        UPDATE
+        <include refid="table_name"/>
+        SET is_delete = 1 WHERE id = #{id}
+    </delete>
+    <!--订单查询-->
+    <select id="findOrderItemByProdIdAndOrderId" parameterType="OrderItem" resultType="OrderItem">
+        SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,discount_fee,
+        adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+        out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+        FROM
+        <include refid="table_name"/>
+        where order_id=#{orderId} AND is_delete = 0 and prod_id=#{prodId}
+    </select>
+
+    <!-- 订单项查询 -->
+    <select id="findOrderItems" parameterType="OrderItem" resultMap="orderItemMap">
+        SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,
+        discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+        out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+        FROM
+        <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND order_no = #{orderNo}
+            </if>
+            <if test="prodId != null">
+                AND prod_id = #{prodId}
+            </if>
+            <if test="prodCode != null and prodCode != ''">
+                AND prod_code = #{prodCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND sku_code = #{skuCode}
+            </if>
+            <if test="prodName != null and prodName != ''">
+                AND prod_name = #{prodName}
+            </if>
+            <if test="prodPrice != null">
+                AND prod_price = #{prodPrice}
+            </if>
+            <if test="prodCount != null">
+                AND prod_count = #{prodCount}
+            </if>
+            <if test="totalFee != null">
+                AND total_fee = #{totalFee}
+            </if>
+            <if test="actualFee != null">
+                AND actual_fee = #{actualFee}
+            </if>
+            <if test="outOrderNo != null and outOrderNo != ''">
+                AND out_order_no = #{outOrderNo}
+            </if>
+            <if test="itemType != null and itemType != ''">
+                AND item_type = #{itemType}
+            </if>
+            <if test="priceDescription != null and priceDescription != ''">
+                AND price_description = #{priceDescription}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime}
+            </if>
+            <if test="orderId != null">
+                AND order_id = #{orderId}
+            </if>
+            <if test="subOutOrderNo != null">
+                AND sub_out_order_no = #{subOutOrderNo}
+            </if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <select id="findOrderItemCountByOrderNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from
+        <include refid="table_name"/>
+        where order_no=#{orderNo} and is_delete=0
+    </select>
+    <select id="findOrderProdNumberByOrderNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select sum(prod_count) from
+        <include refid="table_name"/>
+        where order_no=#{orderNo} and is_delete=0
+    </select>
+    <select id="findOrderItemByOrderNo" parameterType="java.lang.String" resultType="OrderItem">
+
+                       SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,
+                       discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+                       out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+                       FROM
+                          t_order_item
+                          where order_no=#{orderNo} and is_delete=0
+
+                   </select>
+
+
+    <!-- 更新订单项的数据-->
+    <update id="updateOrderItemOwn" parameterType="OrderItem">
+        UPDATE
+        <include refid="table_name"/>
+        set order_no=#{orderNo},order_id=#{orderId} , update_time=now() where id=#{id}
+    </update>
+
+    <!-- 更新订单项的数据-->
+    <update id="updateOrderItemAddGift" parameterType="OrderItem">
+        UPDATE
+        <include refid="table_name"/>
+        set prod_count=#{prodCount},total_fee=#{totalFee} ,actual_fee=#{actualFee}, update_time=now() where id=#{id}
+    </update>
+
+    <!--查询订单项 -->
+    <select id="findOrderItemById" parameterType="int" resultType="OrderItem">
+        SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,
+        discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+        out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+        FROM
+        <include refid="table_name"/>
+        where id=#{id} AND is_delete = 0
+    </select>
+
+    <!--查询订单项 -->
+    <select id="findOrderItemByOrderId" parameterType="int" resultType="OrderItem">
+        SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,
+        discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+        out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+        FROM
+        <include refid="table_name"/>
+        where order_id=#{orderId} AND is_delete = 0
+    </select>
+
+    <!--查询订单项 -->
+    <select id="findOrderItemByProdId" parameterType="AddOrderItemQuery" resultType="OrderItem">
+        SELECT id,order_no,prod_id,prod_code,sku_code,prod_name,prod_price,prod_count,total_fee,actual_fee,
+        discount_fee,adjust_fee,divide_order_fee,part_mjz_discount,post_fee,
+        out_order_no,item_type,price_description,create_time,update_time,is_delete,order_id,sub_out_order_no
+        FROM
+        <include refid="table_name"/>
+        where sku_code=#{skuCode} AND order_id=#{orderId} AND is_delete = 0
+    </select>
+
+    <!--逻辑删除订单ITEM-->
+    <update id="deleteOrderItemById" parameterType="java.lang.Integer">
+      update t_order_item set is_delete=1
+      where id=#{id} and is_delete=0
+    </update>
+    <!--逻辑删除订单ITEM-->
+    <update id="deleteOrderItemByOrderId" parameterType="java.lang.Integer">
+      update t_order_item set is_delete=1
+      where order_id=#{orderId} and is_delete=0
+    </update>
+
+</mapper>

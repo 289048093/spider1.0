@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.UserMapper">
+
+    <select id="findAllUser" resultType="user">
+           select * from <include refid="table_name" />  WHERE is_delete=false
+    </select>
+
+	<sql id='table_name'>t_user</sql>
+
+	<resultMap id="userMap" type="com.ejushang.spider.domain.User">
+		<id property="id" column="id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+        <result property="salt" column="salt"/>
+		<result property="rootUser" column="root_user"/>
+		<result property="roleId" column="role_id"/>
+        <result property="email" column="email"/>
+        <result property="telephone" column="telephone"/>
+	</resultMap>
+
+	<select id="findUserById" resultMap="userMap" parameterType="int">
+		SELECT * FROM <include refid="table_name" /> WHERE id = #{id} and is_delete=false
+
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (id, username, password, salt, root_user, role_id,create_time,email,telephone,repo_id,real_name)
+		values ( #{id}, #{username}, #{password}, #{salt}, #{rootUser}, #{roleId},#{createTime},#{email},#{telephone},#{repoId},#{realName})
+	</insert>
+
+	<update id="update" parameterType="User">
+		update <include refid="table_name" />
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roleId != null and roleId != ''">
+                role_id = #{roleId},
+            </if>
+            <if test="password != null and password != ''">
+                password=#{password},
+            </if>
+            <if test="password != null and password != ''">
+                salt=#{salt},
+            </if>
+            <if test="email != null and email != ''">
+                email=#{email},
+            </if>
+            <if test="telephone != null and telephone != ''">
+                telephone=#{telephone},
+            </if>
+                repo_id=#{repoId},
+            <if test="realName != null and realName != ''">
+                real_name=#{realName},
+            </if>
+                update_time = now(),
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+        </trim>
+    </update>
+
+	<update id="delete" parameterType="integer">
+        update <include refid="table_name" /> set is_delete=1 ,delete_time =now() where id=#{id}
+    </update>
+
+    <delete id="updateTime" parameterType="int">
+        update <include refid="table_name" /> set delete_time=now(), is_delete=true where id=#{id}
+    </delete>
+
+	<select id="findRootUser" resultMap="userMap">
+		SELECT * FROM <include refid="table_name" /> WHERE root_user = true and is_delete=false
+	</select>
+
+    <select id="findByRole" resultMap="userMap">
+        SELECT * FROM <include refid="table_name" /> WHERE role_id = #{roleId} and is_delete=false
+    </select>
+
+    <select id="findUserByUsername" resultMap="userMap">
+        SELECT * FROM <include refid="table_name" /> WHERE username = #{username} and is_delete=false
+    </select>
+
+    <select id="findPageUser" resultType="user">
+        select * from <include refid="table_name" />
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="username != null and username != ''">
+                AND username like "%"#{username}"%"
+            </if>
+            AND is_delete = 0
+        </trim>
+        order by id desc
+    </select>
+
+</mapper>

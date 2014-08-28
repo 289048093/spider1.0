@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.OrderFetchMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_order_fetch</sql>
+
+    <!-- ResultMap定义 -->
+    <resultMap id="orderFetchMap" type="com.ejushang.spider.domain.OrderFetch">
+        <id property="id" column="id" />
+        <result property="fetchTime" column="fetch_time"/>
+        <result property="outPlatform" column="out_platform"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="fetchCount" column="fetch_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <!-- 订单抓取新增 -->
+    <insert id="saveOrderFetch" parameterType="OrderFetch">
+      INSERT INTO <include refid="table_name"/>(fetch_time,out_platform,shop_id,create_time,update_time,fetch_count
+      )
+      VALUES (#{fetchTime},#{outPlatform},#{shopId},now(),now(),#{fetchCount}
+      )
+    </insert>
+
+    <!-- 订单抓取更新 -->
+    <update id="updateOrderFetch" parameterType="OrderFetch">
+      UPDATE <include refid="table_name"/>
+      <trim prefix="SET" suffixOverrides=",">
+          <if test="fetchTime != null">
+              fetch_time = #{fetchTime},
+          </if>
+          <if test="outPlatform != null and outPlatform != ''">
+              out_platform = #{outPlatform},
+          </if>
+          <if test="shopId != null and shop_id != ''">
+              shop_id = #{shopId},
+          </if>
+          <if test="fetchCount != null">
+              fetch_count = #{fetchCount},
+          </if>
+          update_time = now(),
+      </trim>
+      <trim prefix="WHERE" prefixOverrides="AND |OR">
+          <if test="id != null">
+              AND id = #{id}
+          </if>
+      </trim>
+    </update>
+
+    <!-- 订单抓取删除 -->
+    <delete id="deleteOrderFetch" parameterType="OrderFetch">
+      UPDATE <include refid="table_name"/> SET is_delete = 1 WHERE id = #{id}
+    </delete>
+
+    <!-- 订单抓取查询 -->
+    <select id="findOrderFetchs" parameterType="OrderFetch" resultMap="orderFetchMap">
+      SELECT id,fetch_time,out_platform,shop_id,create_time,update_time,fetch_count
+      FROM <include refid="table_name"/>
+      <trim prefix="WHERE" prefixOverrides="AND |OR">
+          <if test="orderFetch.id != null">
+              AND id = #{orderFetch.id}
+          </if>
+          <if test="orderFetch.fetchTime != null">
+              AND fetch_time = #{orderFetch.fetchTime}
+          </if>
+          <if test="orderFetch.outPlatform != null and orderFetch.outPlatform != ''">
+              AND out_platform = #{orderFetch.outPlatform}
+          </if>
+          <if test="orderFetch.shopId != null and orderFetch.shopId != ''">
+              AND shop_id = #{orderFetch.shopId}
+          </if>
+          <if test="orderFetch.createTime != null">
+              AND create_time = #{orderFetch.createTime}
+          </if>
+          <if test="orderFetch.updateTime != null">
+              AND update_time = #{orderFetch.updateTime}
+          </if>
+
+          AND is_delete = 0
+          order by create_time desc
+      </trim>
+    </select>
+
+    <!-- 查询最后一条订单抓取记录 -->
+    <select id="findLastOrderFetch" parameterType="OrderFetch" resultMap="orderFetchMap">
+        SELECT id,fetch_time,out_platform,shop_id,create_time,update_time,fetch_count
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="outPlatform != null and outPlatform != ''">
+                AND out_platform = #{outPlatform}
+            </if>
+            <if test="shopId != null and shopId != ''">
+                AND shop_id = #{shopId}
+            </if>
+        </trim>
+        ORDER BY fetch_time DESC LIMIT 1
+    </select>
+
+
+</mapper>

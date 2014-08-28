@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.BrandMapper">
+    <!--品牌信息map-->
+    <resultMap id="brand" type="com.ejushang.spider.domain.Brand">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="description" column="description"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="deleteTime" column="delete_time"></result>
+    </resultMap>
+
+    <!--通用查询sql-->
+    <sql id="brand_selector">
+            select id,name,description,create_time,update_time,delete_time from t_brand
+    </sql>
+    <!--插入语句-->
+
+    <insert id="saveBrand" parameterType="Brand" useGeneratedKeys="true" keyProperty="id">
+        insert into t_brand(name,description,create_time)values(#{name},#{description},now());
+    </insert>
+    <!--查询所有没有被逻辑删除的-->
+
+    <select id="findBrandAll" resultMap="brand">
+        <include refid="brand_selector"></include>
+        where is_delete=0
+        <if test="brand.id!= null">AND id = #{brand.id}</if>
+        <if test="brand.name!= null and brand.name != ''">AND name LIKE "%"#{brand.name}"%"</if>
+        <if test="brand.description!= null and brand.description != ''">AND description = #{brand.description}</if>
+        order by id desc
+    </select>
+    <!--分页查询的条数-->
+
+    <select id="findBrandCount" resultType="integer">
+        select count(id) from t_brand
+        where is_delete=0
+        <if test="brand.id!= null">AND id = #{brand.id}</if>
+        <if test="brand.name!= null and brand.name != ''">AND name LIKE "%"#{brand.name}"%"</if>
+        <if test="brand.description!= null and brand.description != ''">AND description = #{brand.description}</if>
+        order by id desc
+    </select>
+
+    <!--通过ID获取品牌信息-->
+    <select id="findBrandById" parameterType="integer" resultMap="brand">
+        <include refid="brand_selector"></include>
+        where id=#{id}
+        and is_delete=0
+    </select>
+    <!--通过NAME获取品牌信息-->
+    <select id="findBrandByName" parameterType="string" resultMap="brand">
+
+        <include refid="brand_selector"></include>
+        where name=#{name}
+        and is_delete=0
+
+    </select>
+    <!--更新品牌信息-->
+
+    <update id="updateBrand" parameterType="Brand">
+        update t_brand set
+        <if test="name!= null and name != ''">name =#{name},</if>
+        <if test="description!= null and description != ''">description=#{description},</if>
+        update_time=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+    <!--&lt;!&ndash;获得最大的品牌ID&ndash;&gt;-->
+
+    <!--<select id="findBrandMaxId" resultType="integer">-->
+    <!--select max(id) from t_brand-->
+    <!--</select>-->
+    <!--逻辑删除-->
+
+    <update id="deleteBrand" parameterType="integer">
+           update t_brand set is_delete=1 ,delete_time =now() where id=#{id}
+    </update>
+</mapper>

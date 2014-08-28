@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.OperationMapper">
+
+    <cache readOnly="true" />
+
+	<sql id='table_name'>t_operation</sql>
+
+	<resultMap id="operationMap" type="com.ejushang.spider.domain.Operation">
+		<id property="id" column="id"/>
+        <result property="name" column="name"/>
+		<result property="resourceId" column="resource_id"/>
+		<result property="url" column="url"/>
+		<result property="configable" column="configable"/>
+		<result property="required" column="required"/>
+	</resultMap>
+
+	<select id="get" resultMap="operationMap">
+		SELECT * FROM <include refid="table_name" /> WHERE id = #{id}
+	</select>
+
+    <select id="findOperationByName" resultMap="operationMap">
+        SELECT * FROM <include refid="table_name" /> WHERE name = #{name}
+    </select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (id, name, resource_id, url, configable, required)
+		values ( #{id}, #{name}, #{resourceId}, #{url}, #{configable}, #{required})
+	</insert>
+
+	<update id="update">
+		update <include refid="table_name" /> set name=#{name}, resource_id=#{resourceId}, url=#{url}, configable=#{configable},
+		required=#{required} where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete FROM <include refid="table_name" /> WHERE id = #{id}
+	</delete>
+
+	<select id="findAll" resultMap="operationMap">
+		SELECT * FROM <include refid="table_name" /> <!-- where configable=true-->
+	</select>
+
+    <select id="findByResource" resultMap="operationMap">
+        SELECT * FROM <include refid="table_name" /> where resource_id = #{resourceId}
+    </select>
+
+    <select id="getByUrl" resultMap="operationMap">
+        SELECT * FROM <include refid="table_name" /> where url = #{url}
+    </select>
+
+</mapper>

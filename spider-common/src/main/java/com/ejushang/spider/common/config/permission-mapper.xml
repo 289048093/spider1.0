@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.PermissionMapper">
+	<sql id='table_name'>t_permission</sql>
+
+	<resultMap id="permissionMap" type="com.ejushang.spider.domain.Permission">
+		<id property="id" column="id"/>
+		<result property="operationId" column="operation_id"/>
+        <association property="operation" resultMap="com.ejushang.spider.common.mapper.OperationMapper.operationMap"/>
+	</resultMap>
+
+	<select id="get" resultMap="permissionMap">
+		SELECT * FROM <include refid="table_name" /> WHERE id = #{id}
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (id, operation_id)
+		values ( #{id}, #{operationId})
+	</insert>
+
+	<update id="update">
+		update <include refid="table_name" /> set operation_id=#{operationId} where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete FROM <include refid="table_name" /> WHERE id = #{id}
+	</delete>
+
+    <delete id="deleteByOperation">
+        delete FROM <include refid="table_name" /> where operation_id = #{operationId}
+    </delete>
+
+    <select id="findByOperationName" resultMap="permissionMap">
+        SELECT p.* FROM <include refid="table_name" /> p join t_operation o on p.operation_id = o.id
+        WHERE o.name in
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findByRole" resultMap="permissionMap">
+        SELECT p.* FROM t_role r join t_role_permission rp on r.id = rp.role_id join <include refid="table_name" /> p on rp.permission_id = p.id
+        WHERE r.id = #{roleId}
+    </select>
+
+</mapper>

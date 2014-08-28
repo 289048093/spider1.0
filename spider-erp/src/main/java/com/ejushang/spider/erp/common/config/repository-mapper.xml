@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.RepositoryMapper">
+    <!--SQL语句区 -->
+    <sql id="repository_selector">
+        select id  ,name  , repo_code , address ,charge_person , charge_person_id ,
+        charge_mobile , charge_phone , create_time  ,update_time , delete_time ,shipping_comp
+        from t_repository
+    </sql>
+    <sql id="table_name">t_repository</sql>
+
+    <!--============================================================================-->
+    <!--查询区-->
+    <select id="findRepository" resultType="Repository">
+        <include refid="repository_selector"/>
+        where is_delete = 0
+    </select>
+
+
+    <select id="findRepositoryById" parameterType="java.lang.Integer" resultType="Repository">
+        <include refid="repository_selector"/>
+        where is_delete = 0 and id=#{id}
+    </select>
+    <select id="findRepositoryByName" parameterType="java.lang.String" resultType="Repository">
+        <include refid="repository_selector"/>
+        where is_delete = 0 and name=#{name}
+    </select>
+
+
+    <select id="findRepositoryCountByNameAndCode" parameterType="Repository" resultType="java.lang.Integer">
+        select count(id) from
+        <include refid="table_name"/>
+        where is_delete = 0 and (name = #{name} or repo_code=#{repoCode} )
+    </select>
+
+    <select id="findRepositoryByRepositoryQuery" resultType="Repository">
+
+        <include refid="repository_selector"/>
+        where is_delete = 0
+
+        <if test="repository.name != null and repository.name != ''">
+            and name like "%"#{repository.name}"%"
+        </if>
+        <if test="repository.id != null and repository.id != ''">
+            and id=#{repository.id}
+        </if>
+
+
+    </select>
+    <select id="findRepositoryCountByRepositoryQuery" parameterType="RepositoryQuery" resultType="java.lang.Integer">
+        select count(id) from
+        <include refid="table_name"/>
+        where is_delete = 0
+
+        <if test="name != null and name != ''">
+            and name like "%"#{name}"%"
+        </if>
+
+
+    </select>
+
+    <!-- =============================================================================== -->
+    <!--插入区-->
+    <insert id="saveRepository" parameterType="Repository" useGeneratedKeys="true" keyProperty="id">
+        insert into<include refid="table_name"/>(name , repo_code , address , charge_person ,
+        charge_person_id , charge_mobile , charge_phone , create_time , update_time ,shipping_comp)
+        values(#{name} , #{repoCode} , #{address} , #{chargePerson} , null , #{chargeMobile} ,
+        #{chargePhone} , now() , now() ,#{shippingComp})
+
+    </insert>
+
+    <!--=====================================================================================-->
+    <!--更新区-->
+    <update id="updateRepository" parameterType="Repository">
+        update
+        <include refid="table_name"/>
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="repoCode != null">
+                repo_code = #{repoCode},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="chargePerson != null and chargePerson !=''">
+                charge_person = #{chargePerson},
+            </if>
+            <if test="chargePersonId != null">
+                charge_person_id = #{chargePersonId},
+            </if>
+            <if test="chargeMobile != null ">
+                charge_mobile = #{chargeMobile},
+            </if>
+            <if test="chargePhone != null ">
+                charge_phone = #{chargePhone},
+            </if>
+            <if test="shippingComp != null and shippingComp !=''">
+                shipping_comp = #{shippingComp},
+            </if>
+
+            update_time = now()
+
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="deleteRepositoryById" parameterType="java.lang.Integer">
+        update
+        <include refid="table_name"/>
+        set is_delete = 1 , delete_time = now()
+        where id = #{id}
+    </update>
+    <!--============================================================================-->
+
+    <!--删除区-->
+
+    <!--==============================================================================-->
+
+</mapper>

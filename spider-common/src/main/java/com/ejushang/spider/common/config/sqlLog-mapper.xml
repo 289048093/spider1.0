@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.SqlLogMapper">
+
+	<sql id='table_name'>t_sql_log</sql>
+       <sql id="sqlLog_selector" >
+           select id,business_log_id,content,sql_mapper,operation_type,create_time,execution_time
+       </sql>
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (business_log_id, content, sql_mapper, operation_type, create_time, execution_time)
+		values (#{businessLogId}, #{content}, #{sqlMapper}, #{operationType}, now(), #{executionTime})
+	</insert>
+       <select id="findSqlLog" resultType="SqlLog">
+              <include refid="sqlLog_selector"/>
+           from
+           <include refid="table_name"/>
+       </select>
+
+    <select id="findSqlLogByBusinessLogId" resultType="SqlLog" parameterType="java.lang.Integer">
+        <include refid="sqlLog_selector"/>
+        from
+        <include refid="table_name"/>
+        where     business_log_id=#{businessLogId}
+    </select>
+
+</mapper>

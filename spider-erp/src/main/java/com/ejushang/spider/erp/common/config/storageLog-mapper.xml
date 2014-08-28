@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.StorageLogMapper">
+    <!--SQL语句区 -->
+   <sql id="table">
+     t_storage_log
+   </sql>
+    <sql id="selector">
+        id,operator,operator_id,before_num,after_num,modify_time,operator_id,prod_id,repo_id,type
+    </sql>
+    <insert id="saveStorageLog" parameterType="StorageLog">
+     insert into <include refid="table"/>(operator,operator_id,before_num,after_num,modify_time,prod_id,repo_id,type)
+       values(#{operator},#{operatorId},#{beforeNum},#{afterNum},now(),#{prodId},#{repoId},#{type})
+
+
+    </insert>
+</mapper>

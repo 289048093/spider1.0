@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ConfMapper">
+    <!-- 常用sql定义 -->
+    <sql id="conf_selector">
+        SELECT id,config_key,config_value,config_comment ,create_time,update_time,delete_time,is_delete
+        FROM t_conf
+    </sql>
+
+    <!-- ResultMap定义 -->
+    <resultMap id="ConfResultMap" type="Conf">
+        <id property="id" column="id"></id>
+        <result property="configKey" column="config_key"></result>
+        <result property="configValue" column="config_value"></result>
+        <result property="configComment" column="config_comment"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="deleteTime" column="delete_time"></result>
+    </resultMap>
+
+    <!--插入一条Conf记录-->
+    <insert id="saveConf" parameterType="Conf">
+        INSERT INTO t_conf(config_key,config_value,config_comment,create_time)
+        VALUES(#{configKey},#{configValue},#{configComment},now());
+    </insert>
+
+    <!--删除一条Conf记录-->
+    <delete id="deleteConfById" parameterType="int">
+        UPDATE t_conf SET is_delete = 1,delete_time = now() WHERE id = #{id}
+    </delete>
+
+    <!--查询所有记录-->
+    <select id="findConfAll" parameterType="Conf" resultMap="ConfResultMap">
+        <include refid="conf_selector"/>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id != null">AND id = #{id}</if>
+            <if test="configKey != null and configKey != ''">AND config_key = #{configKey}</if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <!--根据id来查询conf-->
+    <select id="findConfById" parameterType="int" resultMap="ConfResultMap">
+         <include refid="conf_selector"/> WHERE id = #{id} AND is_delete = 0
+    </select>
+
+    <!--根据key来查询conf-->
+    <select id="findConfByKey" parameterType="string" resultMap="ConfResultMap">
+         <include refid="conf_selector"/> WHERE config_key LIKE CONCAT(CONCAT('%', #{configKey}),'%') AND is_delete = 0
+    </select>
+
+    <!--根据id修改记录-->
+    <update id="updateConfById" parameterType="Conf">
+        UPDATE t_conf
+        <trim prefix="set" suffixOverrides=",">
+            <if test="configValue != null and configValue != ''">config_value = #{configValue},</if>
+            <if test="configComment != null and configComment != ''">config_comment = #{configComment},</if>
+            update_time = now()
+        </trim>
+         WHERE id = #{id}
+    </update>
+
+    <!--根据key修改记录-->
+    <update id="updateValueByKey" parameterType="Conf">
+        UPDATE t_conf SET config_value = #{configValue},update_time = Now() WHERE config_key = #{configKey}
+    </update>
+</mapper>

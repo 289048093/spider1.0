@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.OriginalOrderItemMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_original_order_item</sql>
+
+    <!-- ResultMap定义 -->
+    <resultMap id="originalOrderItemMap" type="com.ejushang.spider.domain.OriginalOrderItem">
+        <id property="id" column="id" />
+        <result property="orderNo" column="order_no"/>
+        <result property="skuCode" column="sku_code"/>
+        <result property="price" column="price"/>
+        <result property="buyCount" column="buy_count"/>
+        <result property="totalFee" column="total_fee"/>
+        <result property="actualFee" column="actual_fee"/>
+        <result property="discountFee" column="discount_fee"/>
+        <result property="adjustFee" column="adjust_fee"/>
+        <result property="divideOrderFee" column="divide_order_fee"/>
+        <result property="partMjzDiscount" column="part_mjz_discount"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="orderId" column="order_id"/>
+        <result property="subOrderNo" column="sub_order_no"/>
+    </resultMap>
+
+    <!-- 原始订单项新增 -->
+    <insert id="saveOriginalOrderItem" parameterType="OriginalOrderItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="table_name"/>(order_no,sku_code,price,buy_count,total_fee,actual_fee,
+        create_time,update_time,order_id,sub_order_no
+        )
+        VALUES (#{orderNo},#{skuCode},#{price},#{buyCount},#{totalFee},#{actualFee},
+        now(),now(),#{orderId},#{subOrderNo}
+        )
+    </insert>
+
+    <!-- 原始订单项更新 -->
+    <update id="updateOriginalOrderItem" parameterType="OriginalOrderItem">
+        UPDATE <include refid="table_name"/>
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo},
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                sku_code = #{skuCode},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="buyCount != null">
+                buy_count = #{buyCount},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee},
+            </if>
+            <if test="actualFee != null">
+                actual_fee = #{actualFee},
+            </if>
+            update_time = now(),
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND order_no = #{orderNo}
+            </if>
+        </trim>
+    </update>
+
+    <!-- 原始订单项删除 -->
+    <delete id="deleteOriginalOrderItem" parameterType="OriginalOrderItem">
+        UPDATE <include refid="table_name"/> SET is_delete = 1 WHERE id = #{id}
+    </delete>
+
+</mapper>

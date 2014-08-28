@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.RoleMapper">
+
+    <insert id="save" parameterType="Role" keyProperty="id" useGeneratedKeys="true">
+
+        insert into t_role (id,name) values  (#{id},#{name})
+
+    </insert>
+
+    <delete id="delete" parameterType="int">
+       delete from t_role where id=#{id}
+    </delete>
+
+    <update id="update" parameterType="Role" >
+         update  t_role set name=#{name}
+                       where id=#{id}
+    </update>
+
+    <select id="findRoleById" parameterType="int" resultType="Role">
+          select id,name from t_role where id=#{id}
+    </select>
+
+    <select id="findAllRole" resultType="Role">
+            select id,name from t_role
+    </select>
+
+	<select id="findRoleByName" resultType="Role" parameterType="String">
+		select id,name from t_role where name=#{name}
+	</select>
+
+    <select id="findRoleByOperation" resultType="Role">
+        SELECT * from t_role r
+        join t_role_permission rp on r.id=rp.role_id
+        join t_permission p on rp.permission_id = p.id where p.operation_id = #{operationId}
+    </select>
+
+    <select id="findPageRole" resultType="Role">
+         select id,name from t_role
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="name != null and name != ''">
+                AND name like "%"#{name}"%"
+            </if>
+        </trim>
+        order by id desc
+    </select>
+
+</mapper>

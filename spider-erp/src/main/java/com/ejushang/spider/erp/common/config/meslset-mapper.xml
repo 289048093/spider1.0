@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.MealsetMapper">
+    <!--赠品信息map-->
+    <resultMap id="mealset" type="com.ejushang.spider.domain.Mealset">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="code" column="code"></result>
+        <result property="sellDescription" column="sell_description"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="deleteTime" column="delete_time"></result>
+    </resultMap>
+    <!--通用查询sql-->
+
+    <sql id="mealset_selector">
+            select id,name,code,sell_description,create_time,update_time,delete_time from t_mealset
+    </sql>
+    <!--插入语句-->
+
+    <insert id="saveMealset" parameterType="Mealset" useGeneratedKeys="true" keyProperty="id">
+        insert into t_mealset(name,code,sell_description,create_time)values(#{name},#{code},#{sellDescription},now());
+    </insert>
+    <!--查询所有没有被逻辑删除的-->
+
+    <select id="findMealsetAll" resultMap="mealset">
+        <include refid="mealset_selector"></include>
+        where is_delete=0
+        <if test="mealset.id != null ">and id = #{mealset.id}</if>
+        <if test="mealset.name != null and mealset.name != ''">and name like "%"#{mealset.name}"%"</if>
+        <if test="mealset.code != null and mealset.code != ''">and code = #{mealset.code}</if>
+        <if test="mealset.sellDescription != null and mealset.sellDescription != ''">and sell_description =
+            #{mealset.sellDescription}
+        </if>
+        order by id desc
+    </select>
+    <!--通过ID获取赠品信息-->
+
+    <select id="findMealsetById" parameterType="Integer" resultMap="mealset">
+        <include refid="mealset_selector"></include>
+        where id=#{id} and is_delete=0
+    </select>
+
+    <!--通过name获取套餐信息-->
+
+    <select id="findMealsetByName" parameterType="String" resultMap="mealset">
+        <include refid="mealset_selector"></include>
+        where name=#{name} and is_delete=0
+    </select>
+
+    <!--通过SKU获取赠品信息-->
+
+    <select id="findMealsetBySKU" parameterType="string" resultMap="mealset">
+        <include refid="mealset_selector"></include>
+        where code=#{code} and is_delete=0
+    </select>
+    <!--更新赠品信息-->
+
+    <update id="updateMealset" parameterType="Mealset">
+           update  t_mealset  set name=#{name},sell_description=#{sellDescription},update_time=now() where id=#{id}
+       </update>
+    <!--获得最大的赠品ID-->
+
+    <select id="findMealsetMaxId" resultType="integer">
+           select max(id) from t_mealset
+       </select>
+    <!--逻辑删除-->
+
+    <update id="deleteMealset" parameterType="integer">
+           update t_mealset set is_delete=1 ,delete_time =now() where id=#{id}
+       </update>
+</mapper>

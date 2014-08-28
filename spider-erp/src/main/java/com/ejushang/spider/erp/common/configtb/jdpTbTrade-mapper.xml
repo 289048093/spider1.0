@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mappertb.JdpTbTradeMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">jdp_tb_trade</sql>
+
+    <!-- ResultMap定义 -->
+
+    <select id="findAllShop" resultType="Shop">
+        SELECT * FROM t_shop;
+    </select>
+
+    <!-- 淘宝交易信息查询 -->
+    <select id="findJdpTbTradeByJdpTbTradeQuery" parameterType="JdpTbTradeQuery" resultType="JdpTbTrade">
+        SELECT tid,status,type,seller_nick,buyer_nick,created,modified,jdp_created,jdp_modified,jdp_hashcode,jdp_response
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="tid != null">
+                AND tid = #{tid}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+            <if test="sellerNick != null and sellerNick != ''">
+                AND seller_nick = #{sellerNick}
+            </if>
+            <if test="buyerNick != null and buyerNick != ''">
+                AND buyer_nick = #{buyerNick}
+            </if>
+            <if test="created != null">
+                AND created = #{created}
+            </if>
+            <if test="startCreated != null">
+                <![CDATA[
+                  AND created >= #{startCreated}
+                ]]>
+            </if>
+            <if test="endCreated != null">
+                <![CDATA[
+                  AND created <= #{endCreated}
+                ]]>
+            </if>
+            <if test="modified != null">
+                AND modified = #{modified}
+            </if>
+            <if test="jdpCreated != null">
+                AND jdp_created = #{jdpCreated}
+            </if>
+            <if test="jdpModified != null">
+                AND jdp_modified = #{jdpModified}
+            </if>
+            <if test="startJdpModified != null">
+                <![CDATA[
+                  AND jdp_modified >= #{startJdpModified}
+                ]]>
+            </if>
+            <if test="endJdpModified != null">
+                <![CDATA[
+                  AND jdp_modified <= #{endJdpModified}
+                ]]>
+            </if>
+            <if test="jdpHashcode != null and jdpHashcode != ''">
+                AND jdp_hashcode = #{jdpHashcode}
+            </if>
+            <if test="jdpResponse != null and jdpResponse != ''">
+                AND jdp_response = #{jdpResponse}
+            </if>
+            order by jdp_modified,tid
+        </trim>
+    </select>
+
+</mapper>

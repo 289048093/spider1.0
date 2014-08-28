@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.BusinessLogMapper">
+
+	<sql id='table_name'>t_business_log</sql>
+    <!--通用查询sql-->
+    <sql id="bussiness_selector">
+        select
+            id,
+            user_id,
+            username,
+            operation_id,
+            operation_name,
+           resource_name,
+            ip,
+            params,
+            request_url,
+            create_time,
+            execution_time
+
+    </sql>
+    <!--插入语句-->
+
+    <select id="findBusinessLog" resultType="BusinessLog">
+        <include refid="bussiness_selector"></include>
+        from <include refid="table_name"/>
+
+    </select>
+    <select id="findBusinessLogByBusinessLog"  resultType="BusinessLog">
+        <include refid="bussiness_selector"></include>
+        from <include refid="table_name"/>
+        where 1=1
+        <if test="businessLogQuery.createTimeCondition !=null and businessLogQuery.createTimeCondition !=''">
+            ${businessLogQuery.createTimeCondition}
+        </if>
+        <if test="businessLogQuery.executionTimeCondition !=null and businessLogQuery.executionTimeCondition !=''">
+            ${businessLogQuery.executionTimeCondition}
+
+        </if>
+        <if test=" businessLogQuery.searchValue !=null and businessLogQuery.searchValue !=''">
+
+            ${businessLogQuery.searchCondition}
+        </if>
+        order by create_time desc
+
+
+    </select>
+    <select id="findBusinessLogCountByBusinessLog" parameterType="BusinessLogQuery" resultType="java.lang.Integer">
+      select count(id)
+        from <include refid="table_name"/>
+        where 1=1
+
+        <if test="userName !=null and userName !=''">
+            and  username like "%"#{userName}"%"
+
+        </if>
+        <if test="operationName !=null and operationName !=''">
+            and    operation_name=#{operationName}
+
+        </if>
+        <if test="operationName !=null and operationName !=''">
+            and    operation_name=#{operationName}
+
+        </if>
+        <if test="resourceName !=null and resourceName !=''">
+            and    resource_name=#{resourceName}
+
+        </if>
+        <if test="createTimeCondition !=null and createTimeCondition !=''">
+            ${createTimeCondition}
+
+        </if>
+
+        <if test="executionTimeCondition !=null and executionTimeCondition !=''">
+            ${executionTimeCondition}
+
+        </if>
+
+    </select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (user_id, username, operation_id, operation_name, resource_name,
+        ip, params, request_url, create_time, execution_time)
+		values (#{userId}, #{userName}, #{operationId}, #{operationName}, #{resourceName},
+        #{ip} ,#{params}, #{requestUrl}, now(),#{executionTime})
+	</insert>
+
+
+</mapper>

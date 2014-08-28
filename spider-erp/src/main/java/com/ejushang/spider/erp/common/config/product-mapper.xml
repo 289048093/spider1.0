@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ProductMapper">
+    <resultMap id="product" type="com.ejushang.spider.domain.Product">
+        <id property="id" column="id"></id>
+        <result property="brandId" column="brand_id"></result>
+        <result property="prodName" column="prod_name"></result>
+        <result property="prodNo" column="prod_no"></result>
+        <result property="prodCode" column="prod_code"></result>
+        <result property="cid" column="cid"></result>
+        <result property="description" column="description"></result>
+        <result property="picUrl" column="pic_url"></result>
+        <result property="buyPrice" column="buy_price"></result>
+        <result property="shopPrice" column="shop_price"></result>
+        <result property="standardPrice" column="standard_price"></result>
+        <result property="color" column="color"></result>
+        <result property="weight" column="weight"></result>
+        <result property="boxSize" column="box_size"></result>
+        <result property="speci" column="speci"></result>
+        <result property="type" column="type"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="deleteTime" column="delete_time"></result>
+    </resultMap>
+    <!--通用查询sql-->
+    <sql id="product_selector">
+           select
+           id,brand_id,prod_name,prod_no,prod_code,cid,description,pic_url,buy_price,shop_price,standard_price,color,
+           weight,box_size,speci,type,create_time,update_time,delete_time
+           from t_product
+    </sql>
+    <!--插入语句-->
+
+    <insert id="saveProduct" parameterType="Product" useGeneratedKeys="true" keyProperty="id">
+        insert into t_product(brand_id,prod_name,prod_no,prod_code,cid,description,pic_url,buy_price,
+        shop_price,standard_price,color,weight,box_size,speci,type,create_time)values(
+        #{brandId},#{prodName},#{prodNo},#{prodCode},#{cid},#{description},#{picUrl},#{buyPrice},#{shopPrice},
+        #{standardPrice},#{color},#{weight},#{boxSize},#{speci},#{type},now());
+    </insert>
+    <!--插入语句-->
+
+    <insert id="saveProdSales" parameterType="ProdSales" useGeneratedKeys="true" keyProperty="id">
+        insert into t_prod_sales(prod_id,sale_count,send_count,back_count,create_time)values(#{prodId},#{saleCount},
+        #{sendCount},#{backCount},now());
+    </insert>
+    <!--查询所有没有被逻辑删除的商品-->
+    <select id="findProductAll" resultMap="product">
+        <include refid="product_selector"></include>
+        where is_delete=0
+        <if test="product.id != null ">and id = #{product.id}</if>
+        <if test="product.brandId != null ">and brand_id = #{product.brandId}</if>
+        <if test="product.prodName != null and product.prodName != ''">and prod_name LIKE "%"#{product.prodName}"%"</if>
+        <if test="product.prodNo != null and product.prodNo != ''">and prod_no LIKE "%"#{product.prodNo}"%"</if>
+        <if test="product.prodCode != null and product.prodCode != ''">and prod_code LIKE "%"#{product.prodCode}"%"</if>
+        <if test="product.cid != null ">and cid = #{product.cid}</if>
+        <if test="product.description != null and product.description != ''">and description = #{product.description}
+        </if>
+        <if test="product.picUrl != null and product.picUrl != ''">and pic_url = #{product.picUrl}</if>
+        <if test="product.buyPrice != null">and buy_price = #{product.buyPrice}</if>
+        <if test="product.shopPrice != null ">and shop_price = #{product.shopPrice}</if>
+        <if test="product.standardPrice != null ">and standard_price = #{product.standardPrice}</if>
+        <if test="product.color != null and product.color != ''">and color = #{product.color}</if>
+        <if test="product.weight != null and product.weight != ''">and weight = #{product.weight}</if>
+        <if test="product.boxSize != null and product.boxSize != ''">and box_size = #{product.boxSize}</if>
+        <if test="product.speci != null and product.speci != ''">and speci = #{product.speci}</if>
+        <if test="product.type != null and product.type != ''">and type = #{product.type}</if>
+        order by id desc
+    </select>
+    <!--     总条数-->
+    <select id="findProductCount" resultType="Integer">
+        select count(id) from t_product
+        where is_delete=0
+        <if test="id != null and id != ''">and id = #{id}</if>
+        <if test="brandId != null and brandId != ''">and brand_id = #{brandId}</if>
+        <if test="prodNo != null and prodNo != ''">and prod_no = #{prodNo}</if>
+        <if test="prodCode != null and prodCode != ''">and prod_code = #{prodCode}</if>
+        <if test="cid != null and cid != ''">and cid = #{cid}</if>
+        <if test="description != null and description != ''">and description = #{description}</if>
+        <if test="picUrl != null and picUrl != ''">and pic_url = #{picUrl}</if>
+        <if test="buyPrice != null ">and buy_price = #{buyPrice}</if>
+        <if test="shopPrice != null ">and shop_price = #{shopPrice}</if>
+        <if test="standardPrice != null ">and standard_price = #{standardPrice}</if>
+        <if test="color != null and color != ''">and color = #{color}</if>
+        <if test="weight != null and weight != ''">and weight = #{weight}</if>
+        <if test="boxSize != null and boxSize != ''">and box_size = #{boxSize}</if>
+        <if test="speci != null and speci != ''">and speci = #{speci}</if>
+        <if test="type != null and type != ''">and type = #{type}</if>
+        <if test="createTime != null and createTime != ''">and create_time = #{createTime}</if>
+        <if test="prodName != null and prodName != ''">and prod_name LIKE "%"#{prodName}"%"</if>
+        order by id desc
+        <trim prefix="LIMIT" suffixOverrides=",">
+            <if test="start != null">
+                #{start},
+            </if>
+            <if test="limit != null">
+                #{limit},
+            </if>
+        </trim>
+    </select>
+
+
+    <!--通过ID获取商品信息-->
+    <select id="findProductById" parameterType="Integer" resultMap="product">
+        <include refid="product_selector"></include>
+        where id=#{id}
+        and is_delete=0;
+    </select>
+    <!--通过CID获取商品信息-->
+    <select id="findProductByCid" parameterType="Integer" resultMap="product">
+        <include refid="product_selector"></include>
+        where cid=#{cid}
+        and is_delete=0;
+    </select>
+    <!--通过BrandID获取商品信息-->
+    <select id="findProductByBrandId" parameterType="Integer" resultMap="product">
+        <include refid="product_selector"></include>
+        where brand_id=#{brandId}
+        and is_delete=0;
+    </select>
+
+
+    <!--通过SKU获取商品信息-->
+
+    <select id="findProductBySKU" parameterType="Product" resultMap="product">
+        <include refid="product_selector"></include>
+        where prod_code=#{prodCode} and type=#{type}
+        and is_delete=0
+    </select>
+
+
+    <!--通过商品编号获取商品信息-->
+
+    <select id="findProductByProdNo" parameterType="ProdNoQuery" resultMap="product">
+        <include refid="product_selector"></include>
+        where prod_no like "%"#{prodNo}"%"
+        and type=#{type}
+        and is_delete=0
+    </select>
+
+    <!--通过商品名称获取商品信息-->
+
+    <select id="findProductByProdName" parameterType="ProdNameQuery" resultMap="product">
+        <include refid="product_selector"></include>
+        where prod_name like "%"#{prodName}"%"
+        and type=#{type}
+        and is_delete=0
+    </select>
+
+    <!--更新商品信息-->
+    <update id="updateProduct" parameterType="Product">
+        update t_product set
+        <if test="brandId!= null ">brand_id= #{brandId},</if>
+        <if test="prodName!= null and prodName!=''">prod_name= #{prodName},</if>
+        <if test="prodNo!= null and prodNo!=''">prod_no= #{prodNo},</if>
+        <if test="cid!= null">cid= #{cid},</if>
+        <if test="description!= null and description!=''">description= #{description},</if>
+        <if test="picUrl!= null and picUrl!=''">pic_url= #{picUrl},</if>
+        <if test="buyPrice!= null ">buy_price= #{buyPrice},</if>
+        <if test="shopPrice!= null ">shop_price= #{shopPrice},</if>
+        <if test="standardPrice!= null">standard_price= #{standardPrice},</if>
+        <if test="color!= null and color!=''">color= #{color},</if>
+        <if test="weight!= null and weight!=''">weight= #{weight},</if>
+        <if test="boxSize!= null and boxSize!=''">box_size= #{boxSize},</if>
+        <if test="speci!= null and speci!=''">speci= #{speci},</if>
+        <if test="type!= null and type!=''">type= #{type},</if>
+        <if test="createTime!= null and createTime!=''">create_time= #{createTime},</if>
+        <if test="updateTime!= null and updateTime!=''">update_time= #{updateTime},</if>
+        <if test="deleteTime!= null and deleteTime!=''">delete_time= #{deleteTime},</if>
+
+        update_time=now()
+        where
+        id=#{id}
+    </update>
+    <!--获得最大的商品ID-->
+
+    <select id="findProductMaxId" resultType="integer">
+           select max(id) from t_product
+       </select>
+    <!--逻辑删除-->
+
+    <update id="deleteProductById" parameterType="integer">
+        update t_product set is_delete=1 ,delete_time =now() where id=#{id}
+    </update>
+    <!--逻辑删除-->
+
+    <update id="deleteProduct" parameterType="Product">
+        update t_product set is_delete=1 ,delete_time =now() ,delete_time =now()
+        where
+        1=1
+        <if test="id != null ">and id=#{id}</if>
+        <if test="cid != null ">and cid = #{cid}</if>
+        <if test="brandId != null ">and brand_id = #{brandId}</if>
+    </update>
+
+
+</mapper>

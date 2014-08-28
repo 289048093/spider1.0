@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="PROJECT" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${loggingRoot}/order-fetch.log"/>
+        <param name="Append" value="true"/>
+        <param name="Encoding" value="UTF-8"/>
+        <param name="Threshold" value="debug"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yy-MM-dd HH:mm} [%X{requestURIWithQueryString}] [%p] %c{1}:%L - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="debug"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%d{yy-MM-dd HH:mm} [%X{requestURIWithQueryString}] [%p] %c{1}:%L - %m%n" />
+        </layout>
+    </appender>
+
+    <!-- spring & mybatis transaction log -->
+    <logger name="org.springframework.transaction">
+        <level value="info"/>
+    </logger>
+    <logger name="org.springframework.jdbc.datasource">
+        <level value="info"/>
+    </logger>
+    <logger name="org.mybatis.spring">
+        <level value="info"/>
+    </logger>
+    <logger name="org.apache.ibatis">
+        <level value="info"/>
+    </logger>
+
+    <!-- sql log -->
+    <logger name="com.ejushang.spider">
+        <level value="info" />
+    </logger>
+
+    <!-- ===================================================================== -->
+    <!--  Root log                                                          -->
+    <!-- ==================================================================== -->
+    <root>
+        <level value="warn"/>
+        <appender-ref ref="PROJECT"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</log4j:configuration>

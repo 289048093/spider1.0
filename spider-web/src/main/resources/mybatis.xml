@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <typeAliases>
+        <!-- 别名：订单实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Order" alias="Order"/>
+        <!-- 别名：订单项实体 -->
+        <typeAlias type="com.ejushang.spider.domain.OrderItem" alias="OrderItem"/>
+        <!-- 别名：原始订单实体 -->
+        <typeAlias type="com.ejushang.spider.domain.OriginalOrder" alias="OriginalOrder"/>
+        <!-- 别名：原始订单项实体 -->
+        <typeAlias type="com.ejushang.spider.domain.OriginalOrderItem" alias="OriginalOrderItem"/>
+        <!-- 别名：订单抓取实体 -->
+        <typeAlias type="com.ejushang.spider.domain.OrderFetch" alias="OrderFetch"/>
+
+        <!-- 别名：物流设计实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Delivery" alias="Delivery"></typeAlias>
+        <!-- 别名：物流设计查询实体 -->
+        <typeAlias type="com.ejushang.spider.query.DeliveryQuery" alias="DeliveryQuery"></typeAlias>
+        <!-- 别名：物流设计Vo实体 -->
+        <typeAlias type="com.ejushang.spider.vo.DeliveryVo" alias="DeliveryVo"></typeAlias>
+        <!--日志实体-->
+        <typeAlias type="com.ejushang.spider.domain.BusinessLog" alias="BusinessLog"></typeAlias>
+        <!--sql日志实体-->
+        <typeAlias type="com.ejushang.spider.domain.SqlLog" alias="SqlLog"></typeAlias>
+
+        <!-- 别名：产品实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Brand" alias="Brand"></typeAlias>
+        <!-- 别名：库存记录日志 -->
+        <typeAlias type="com.ejushang.spider.domain.StorageLog" alias="StorageLog"></typeAlias>
+        <!-- 别名：产品实体 -->
+        <typeAlias type="com.ejushang.spider.query.BrandQuery" alias="BrandQuery"></typeAlias>
+        <!-- 别名：产品实体 -->
+        <typeAlias type="com.ejushang.spider.vo.BrandVo" alias="BrandVo"></typeAlias>
+
+        <!-- 别名：套餐实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Mealset" alias="Mealset"></typeAlias>
+        <!-- 别名：套餐实体 -->
+        <typeAlias type="com.ejushang.spider.query.MealsetQuery" alias="MealsetQuery"></typeAlias>
+        <!-- 别名：套餐实体 -->
+        <typeAlias type="com.ejushang.spider.vo.MealsetVo" alias="MealsetVo"></typeAlias>
+
+
+        <!-- 别名：套餐项实体 -->
+        <typeAlias type="com.ejushang.spider.domain.MealsetItem" alias="MealsetItem"></typeAlias>
+        <!-- 别名：套餐项实体 -->
+        <typeAlias type="com.ejushang.spider.query.MealsetItemQuery" alias="MealsetItemQuery"></typeAlias>
+        <!-- 别名：套餐项实体 -->
+        <typeAlias type="com.ejushang.spider.vo.MealsetItemVo" alias="MealsetItemVo"></typeAlias>
+
+        <typeAlias type="com.ejushang.spider.query.OrderItemQuery" alias="OrderItemQuery"></typeAlias>
+        <!-- 别名：产品分类实体 -->
+        <typeAlias type="com.ejushang.spider.domain.ProdCategory" alias="ProdCategory"></typeAlias>
+        <!-- 别名：产品分类Query实体 -->
+        <typeAlias type="com.ejushang.spider.query.ProdCategoryQuery" alias="ProdCategoryQuery"></typeAlias>
+        <!-- 别名：产品分类Vo实体 -->
+        <typeAlias type="com.ejushang.spider.vo.ProdCategoryVo" alias="ProdCategoryVo"></typeAlias>
+
+        <!-- 别名：商品实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Product" alias="Product"></typeAlias>
+        <!-- 别名：商品查询实体 -->
+        <typeAlias type="com.ejushang.spider.query.ProductQuery" alias="ProductQuery"></typeAlias>
+        <!-- 别名：商品vo实体 -->
+        <typeAlias type="com.ejushang.spider.vo.ProductVo" alias="ProductVo"></typeAlias>
+
+        <!-- 别名：商品销量 实体-->
+        <typeAlias type="com.ejushang.spider.domain.ProdSales" alias="ProdSales"></typeAlias>
+
+        <!-- 别名：仓库实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Repository" alias="Repository"></typeAlias>
+        <!-- 别名：仓库条件实体  -->
+        <typeAlias type="com.ejushang.spider.query.RepositoryQuery" alias="RepositoryQuery"></typeAlias>
+        <!-- 别名：库存实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Storage" alias="Storage"></typeAlias>
+        <typeAlias type="com.ejushang.spider.domain.User" alias="User"/>
+        <typeAlias type="com.ejushang.spider.domain.Role" alias="Role"/>
+
+        <!--别名：商品规则-商品 -->
+        <typeAlias type="com.ejushang.spider.domain.GiftProd" alias="GiftProd"></typeAlias>
+        <!--别名：商品规则-商品Query-->
+        <typeAlias type="com.ejushang.spider.query.GiftProdQuery" alias="GiftProdQuery"></typeAlias>
+        <!--别名：商品规则-品牌-->
+        <typeAlias type="com.ejushang.spider.domain.GiftBrand" alias="GiftBrand"></typeAlias>
+        <!--别名：商品规则-品牌 赠送商品项实体-->
+        <typeAlias type="com.ejushang.spider.domain.GiftBrandItem" alias="GiftBrandItem"></typeAlias>
+        <!--别名：商品规则-品牌Query-->
+        <typeAlias type="com.ejushang.spider.query.GiftBrandQuery" alias="GiftBrandQuery"></typeAlias>
+        <!--别名：商品规则-品牌VO-->
+        <typeAlias type="com.ejushang.spider.vo.GiftBrandVO" alias="GiftBrandVO"></typeAlias>
+        <!--别名：商品销量实体-->
+        <typeAlias type="com.ejushang.spider.domain.ProdSales" alias="ProdSales"></typeAlias>
+        <!--别名：设置项实体-->
+        <typeAlias type="com.ejushang.spider.domain.Conf" alias="Conf"></typeAlias>
+        <!-- 别名：产品分类Query实体 -->
+        <typeAlias type="com.ejushang.spider.query.ProdCategoryQuery" alias="ProdCategoryQuery"></typeAlias>
+        <typeAlias type="com.ejushang.spider.vo.StorageVo" alias="StorageVO"></typeAlias>
+        <!--别名：库存查询条件实体-->
+        <typeAlias type="com.ejushang.spider.query.StorageQuery" alias="StorageQuery"></typeAlias>
+        <!--别名：订单查询条件实体-->
+        <typeAlias type="com.ejushang.spider.query.OrderQuery" alias="OrderQuery"></typeAlias>
+
+        <!-- 别名：店铺实体 -->
+        <typeAlias type="com.ejushang.spider.domain.Shop" alias="Shop"></typeAlias>
+        <!-- 别名：店铺授权实体 -->
+        <typeAlias type="com.ejushang.spider.domain.ShopAuth" alias="ShopAuth"></typeAlias>
+        <!-- 别名：店铺查询实体 -->
+        <typeAlias type="com.ejushang.spider.query.ShopQuery" alias="ShopQuery"></typeAlias>
+        <!-- 别名：店铺授权查询实体 -->
+        <typeAlias type="com.ejushang.spider.query.ShopAuthQuery" alias="ShopAuthQuery"></typeAlias>
+
+        <typeAlias type="com.ejushang.spider.query.ProdNoQuery" alias="ProdNoQuery"></typeAlias>
+
+        <typeAlias type="com.ejushang.spider.query.ProdNameQuery" alias="ProdNameQuery"></typeAlias>
+
+        <typeAlias type="com.ejushang.spider.query.AddOrderItemQuery" alias="AddOrderItemQuery"></typeAlias>
+
+        <!--别名：业务日志有关实体-->
+        <typeAlias type="com.ejushang.spider.domain.BusinessLog" alias="BusinessLog"></typeAlias>
+        <typeAlias type="com.ejushang.spider.query.BusinessLogQuery" alias="BusinessLogQuery"></typeAlias>
+        <typeAlias type="com.ejushang.spider.domain.SqlLog" alias="SqlLog"/>
+
+        <!--别名：淘宝交易信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpTbTrade" alias="JdpTbTrade"></typeAlias>
+        <!--别名：淘宝交易信息查询实体 -->
+        <typeAlias type="com.ejushang.spider.query.taobao.JdpTbTradeQuery" alias="JdpTbTradeQuery"></typeAlias>
+        <!--别名：分销退款信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpFxRefund" alias="JdpFxRefund"></typeAlias>
+        <!--别名：分销交易信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpFxTrade" alias="JdpFxTrade"></typeAlias>
+        <!--别名：淘宝商品信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpTbItem" alias="JdpTbItem"></typeAlias>
+        <!--别名：淘宝退款信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpTbRefund" alias="JdpTbRefund"></typeAlias>
+        <!--别名：天猫退款信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpTmRefund" alias="JdpTmRefund"></typeAlias>
+        <!--别名：天猫退货信息实体 -->
+        <typeAlias type="com.ejushang.spider.domain.taobao.JdpTmReturn" alias="JdpTmReturn"></typeAlias>
+    </typeAliases>
+    <plugins>
+        <plugin interceptor="com.ejushang.spider.log.mybatis.MybatisSqlLogInterceptor" />
+        <plugin interceptor="com.ejushang.spider.page.MybatisPageInterceptor" />
+    </plugins>
+</configuration>

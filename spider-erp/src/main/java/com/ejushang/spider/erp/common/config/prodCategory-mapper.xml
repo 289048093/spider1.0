@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ProdCategoryMapper">
+
+    <!--商品分类信息map-->
+    <resultMap id="prodCategory" type="com.ejushang.spider.domain.ProdCategory">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="deleteTime" column="delete_time"></result>
+    </resultMap>
+    <!--通用查询sql-->
+
+    <sql id="prodCategory_selector">
+            select
+            id,name,create_time,update_time,delete_time
+            from t_prod_category
+    </sql>
+    <!--插入语句-->
+
+    <insert id="saveProdCategory" parameterType="ProdCategory" useGeneratedKeys="true" keyProperty="id">
+        insert into t_prod_category(name,create_time)values(#{name},now());
+    </insert>
+    <!--查询所有没有被逻辑删除的-->
+
+    <select id="findProdCategoryAll" resultMap="prodCategory">
+        <include refid="prodCategory_selector"></include>
+        where is_delete=0
+        <if test="prodCategory.id != null">and id = #{prodCategory.id}</if>
+        <if test="prodCategory.name != null and prodCategory.name != ''">and name LIKE "%"#{prodCategory.name}"%"</if>
+        order by id desc
+    </select>
+
+    <!--通过ID获取商品分类信息-->
+
+    <select id="findProdCategoryById" parameterType="Integer" resultMap="prodCategory">
+        <include refid="prodCategory_selector"></include>
+        where id=#{id}
+        and is_delete=0
+    </select>
+    <!--通过name获取商品分类信息-->
+
+    <select id="findProdCategoryByName" parameterType="string" resultMap="prodCategory">
+        <include refid="prodCategory_selector"></include>
+        where name=#{name}
+        and is_delete=0
+    </select>
+    <!--更新商品分类信息-->
+
+    <update id="updateProdCategory" parameterType="ProdCategory">
+        update t_prod_category set name=#{name},update_time=now() where id=#{id}
+    </update>
+    <!--获得最大的商品分类ID-->
+
+    <select id="findProdCategoryMaxId" resultType="integer">
+           select max(id) from t_prod_category
+       </select>
+    <!--逻辑删除-->
+
+    <update id="deleteProdCategory" parameterType="integer">
+           update t_prod_category set  is_delete=1 ,delete_time =now() where id=#{id}
+       </update>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.GiftBrandItemMapper">
+    <!-- 常用sql定义 -->
+    <sql id="giftBrandItem_selector">
+        SELECT id,gift_brand_id,
+                gift_prod_id,gift_prod_count,
+                create_time,update_time,
+                delete_time
+        FROM t_gift_brand_item
+    </sql>
+    <!-- ResultMap定义 -->
+    <resultMap id="GiftBrandItemResultMap" type="GiftBrandItem">
+        <id property="id" column="id"/>
+        <result property="giftBrandId" column="gift_brand_id"/>
+        <result property="giftProdId" column="gift_prod_id"/>
+        <result property="giftProdCount" column="gift_prod_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+
+    <!--增加一条记录-->
+    <insert id="saveGiftBrandItem" parameterType="GiftBrandItem">
+        INSERT INTO t_gift_brand_item(gift_brand_id,gift_prod_id,gift_prod_count,create_time)
+        VALUES (#{giftBrandId},#{giftProdId},#{giftProdCount},now())
+    </insert>
+
+    <!--根据id查询对应的记录-->
+    <select id="findByGiftBrandId" parameterType="java.lang.Integer" resultMap="GiftBrandItemResultMap">
+        <!--<include refid="giftBrandItem_selector"/>-->
+        SELECT g.id AS id,p.prod_no AS prodNo,g.gift_prod_id AS giftProdId,
+            p.brand_id AS brandId,g.gift_prod_count AS giftProdCount,
+            p.prod_name AS prodName
+        FROM t_gift_brand_item g
+        LEFT JOIN t_product p ON g.gift_prod_id = p.id
+        WHERE g.is_delete = 0
+        AND gift_brand_id = #{giftBrandId}
+    </select>
+
+    <!--根据giftBrandId删除记录-->
+    <update id="deleteByGiftBrandId" parameterType="java.lang.Integer" >
+        UPDATE t_gift_brand_item SET is_delete = 1,delete_time = now() WHERE gift_brand_id = #{giftBrandId}
+    </update>
+
+
+</mapper>

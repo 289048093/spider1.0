@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.DeliveryMapper">
+    <!--物流信息map-->
+    <resultMap id="delivery" type="com.ejushang.spider.domain.Delivery">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="law" column="law"></result>
+        <result property="printHtml" column="print_html"></result>
+        <result property="logisticsPicturePath" column="logistics_picture_path"></result>
+    </resultMap>
+    <!--通用查询sql-->
+    <sql id="delivery_selector">
+        select id,name,law,print_html,logistics_picture_path from t_logistics_printinfo
+    </sql>
+    <!--插入语句-->
+    <insert id="saveDelivery" parameterType="Delivery" useGeneratedKeys="true" keyProperty="id">
+         insert into t_logistics_printinfo( name,law,print_html,logistics_picture_path,create_time )values(#{name},
+         #{law},#{printHtml},#{logisticsPicturePath},now());
+    </insert>
+    <!--查询所有没有被逻辑删除的-->
+    <select id="findDeliveryAll" resultMap="delivery" parameterType="DeliveryQuery">
+        <include refid="delivery_selector"></include>
+        where is_delete=0
+        <if test="id!= null">AND id = #{id}</if>
+        <if test="name!= null and name!=''">AND name like "%"#{name}"%"</if>
+    </select>
+
+    <!--通过ID获取物流信息-->
+    <select id="findDeliveryById" parameterType="Integer" resultMap="delivery">
+        <include refid="delivery_selector"></include>
+        where id=#{id} and is_delete =0;
+    </select>
+    <!--通过name获取物流信息-->
+    <select id="findDeliveryByName" parameterType="Integer" resultMap="delivery">
+        <include refid="delivery_selector"></include>
+        where name=#{name} and is_delete =0;
+    </select>
+    <!--通过name获取物流信息-->
+    <select id="findDeliveryByNames" parameterType="Integer" resultMap="delivery">
+        <include refid="delivery_selector"></include>
+        where name=#{name} and is_delete =0;
+    </select>
+    <!--通过name获取物流信息-->
+    <select id="findByName" parameterType="java.lang.Integer" resultMap="delivery">
+        <include refid="delivery_selector"></include>
+        where name=#{name} and is_delete =0;
+    </select>
+
+    <!--更新物流信息-->
+    <update id="updateDelivery" parameterType="Delivery">
+        update t_logistics_printinfo set
+        <if test="name!= null and name != ''">name =#{name},</if>
+        <if test="logisticsPicturePath!= null and logisticsPicturePath != ''">
+            logistics_picture_path=#{logisticsPicturePath},
+        </if>
+        <if test="law!= null and law != ''">law=#{law},</if>
+        <if test="printHtml!= null and printHtml != ''">print_html=#{printHtml},</if>
+        update_time=now()
+        where id=#{id} and is_delete=0
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteDelivery" parameterType="integer">
+           update t_logistics_printinfo set is_delete =1 where id=#{id}
+       </update>
+</mapper>

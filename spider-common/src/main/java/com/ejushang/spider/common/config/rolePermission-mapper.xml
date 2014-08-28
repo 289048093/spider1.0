@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.common.mapper.RolePermissionMapper">
+	<sql id='table_name'>t_role_permission</sql>
+
+	<resultMap id="rolePermissionMap" type="com.ejushang.spider.domain.RolePermission">
+		<id property="id" column="id"/>
+		<result property="roleId" column="role_id"/>
+		<result property="permissionId" column="permission_id"/>
+	</resultMap>
+
+	<select id="get" resultMap="rolePermissionMap">
+		SELECT * FROM <include refid="table_name" /> WHERE id = #{id}
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into <include refid="table_name" /> (id, role_id, permission_id)
+		values ( #{id}, #{roleId}, #{permissionId})
+	</insert>
+
+	<update id="update">
+		update <include refid="table_name" /> set role_id=#{roleId}, permission_id=#{permissionId}
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete FROM <include refid="table_name" /> WHERE id = #{id}
+	</delete>
+
+    <delete id="deleteAll">
+        delete FROM <include refid="table_name" />
+    </delete>
+
+    <delete id="deleteByOperation">
+        delete from <include refid="table_name" /> where permission_id in (select p.id from t_permission p where p.operation_id = #{operationId})
+    </delete>
+
+    <delete id="deleteByRole">
+        delete from <include refid="table_name" /> where role_id = #{roleId}
+    </delete>
+
+    <select id="findByRole" resultMap="rolePermissionMap">
+        SELECT * FROM <include refid="table_name" /> WHERE role_id = #{roleId}
+    </select>
+
+</mapper>

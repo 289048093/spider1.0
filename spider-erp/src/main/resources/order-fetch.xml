@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <beans>
+
+        <!--&lt;!&ndash;-->
+          <!--this bean needs to be eagerly pre-instantiated in order for the exporting to occur;-->
+          <!--this means that it must not be marked as lazily initialized-->
+        <!--&ndash;&gt;-->
+        <!--<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">-->
+            <!--<property name="beans">-->
+                <!--<map>-->
+                    <!--<entry key="bean:name=orderHouseKeeper" value-ref="orderHouseKeeper"/>-->
+                <!--</map>-->
+            <!--</property>-->
+            <!--<property name="server" ref="mbeanServer"/>-->
+        <!--</bean>-->
+
+        <!--<bean id="registry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean" destroy-method="destroy">-->
+        <!--<property name="port" value="9992"/>-->
+        <!--</bean>-->
+        <!--<bean id="serverConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean" depends-on="registry">-->
+        <!--<property name="objectName"  value="connector:name=rmi"/>-->
+        <!--<property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:9992/jmxrmi"/>-->
+        <!--<property name="server" ref="mbeanServer"/>-->
+        <!--</bean>-->
+
+        <!--<bean id="assembler"-->
+              <!--class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">-->
+            <!--<property name="attributeSource" ref="jmxAttributeSource"/>-->
+        <!--</bean>-->
+
+        <!--<bean id="jmxAttributeSource"-->
+              <!--class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>-->
+
+        <bean id="orderHouseKeeper" class="com.ejushang.spider.erp.main.OrderHouseKeeper" />
+
+        <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean"/>
+
+        <bean id="httpJDMKAdaptor" class="com.sun.jdmk.comm.HtmlAdaptorServer" init-method="start" destroy-method="stop" >
+            <property name="port" value="8098" />
+        </bean>
+
+        <bean id="mBeanExporter" class="org.springframework.jmx.export.MBeanExporter"
+              lazy-init="false">
+            <!--<property name="assembler" ref="assembler"/>-->
+            <property name="server" ref="mbeanServer"/>
+            <property name="beans">
+                <map>
+                    <entry key="com.ejushang.spider.erp.main:name=orderHouseKeeper" value-ref="orderHouseKeeper"/>
+                    <entry key="htmlAdpter:name=httpJDMKAdaptor" value-ref="httpJDMKAdaptor"/>
+                </map>
+            </property>
+
+        </bean>
+
+
+    </beans>
+
+</beans>

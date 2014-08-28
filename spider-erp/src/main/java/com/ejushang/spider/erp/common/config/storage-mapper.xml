@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.StorageMapper">
+    <sql id="storage_selector">
+       select id as id , prod_id as prodId , repo_id as repoId ,
+       actually_number as actuallyNumber , modify_time as modifyTime
+       from t_storage
+    </sql>
+    <sql id="table_name">t_storage</sql>
+    <resultMap id="StorageMap" type="Storage">
+        <id property="id" column="id"/>
+        <result property="prodId" column="prodId"/>
+        <result property="repoId" column="repoId"/>
+
+        <result property="actuallyNumber" column="actuallyNumber"/>
+        <association property="product" javaType="Product">
+            <id property="id" column="prodId"/>
+            <result property="brandId" column="brandId"/>
+            <result property="prodName" column="prodName"/>
+            <result property="prodNo" column="prodNo"/>
+            <result property="prodCode" column="prodCode"/>
+            <result property="cid" column="prodCaId"/>
+            <result property="shopPrice" column="shopPrice"/>
+            <result property="standardPrice" column="standardPrice"/>
+            <result property="description" column="description"/>
+
+        </association>
+        <association property="repository" javaType="Repository">
+            <id property="id" column="repoId"/>
+            <result property="name" column="repoName"/>
+        </association>
+        <association property="prodCategory" javaType="ProdCategory">
+            <id property="id" column="prodCaId"/>
+            <result property="name" column="prodCaName"/>
+        </association>
+        <association property="brand" javaType="Brand">
+            <id property="id" column="brandId"/>
+            <result property="name" column="brandName"/>
+
+        </association>
+
+
+    </resultMap>
+    <!--查询区-->
+    <select id="findStorage" resultType="Storage">
+        <include refid="storage_selector"/>
+    </select>
+
+    <select id="findJoinStorageByPage" resultMap="StorageMap" parameterType="StorageQuery">
+        select s.id , r.name as repoName , b.name as brandName , p.prod_name as prodName ,
+        p.prod_no as prodNo , p.prod_code as prodCode , p.shop_price as shopPrice ,
+        p.standard_price as standardPrice , s.actually_number as actuallyNumber ,
+        p.description as description , c.name as prodCaName , p.id as prodId ,
+        b.id as brandId , c.id as prodCaId , r.id as repoId
+        from
+        <include refid="table_name"/>
+        s
+        join t_product p on s.prod_id=p.id
+        join t_brand b on p.brand_id=b.id
+        join t_prod_category c on p.cid=c.id
+        join t_repository r on s.repo_id=r.id
+        where r.is_delete=0
+        <if test="storage.repoId != null ">
+            and r.id = #{storage.repoId}
+        </if>
+        <if test="storage.brandId != null ">
+            and b.id = #{storage.brandId}
+        </if>
+        <if test="storage.prodNo != null and storage.prodNo !='' ">
+            and p.prod_no like "%"#{storage.prodNo}"%"
+        </if>
+        <if test=" storage.prodName != null and storage.prodName != '' ">
+            and p.prod_name like "%"#{storage.prodName}"%"
+        </if>
+        <if test=" storage.prodCode != null and storage.prodCode !='' ">
+            and p.prod_code like "%"#{storage.prodCode}"%"
+        </if>
+        <if test=" storage.cid != null ">
+            and p.cid = #{storage.cid}
+        </if>
+        order by s.id asc
+    </select>
+
+    <select id="findStorageById" parameterType="java.lang.Integer" resultType="Storage">
+        <include refid="storage_selector"/>
+        where id=#{id}
+    </select>
+
+    <select id="findStorageByRepoId" parameterType="java.lang.Integer" resultType="Storage">
+        <include refid="storage_selector"/>
+        where repo_id=#{repoId}
+    </select>
+    <select id="findStorageByProdId" parameterType="java.lang.Integer" resultType="Storage">
+        <include refid="storage_selector"/>
+        where prod_id=#{prodId}
+
+    </select>
+    <select id="findStorageByStorage" parameterType="StorageQuery" resultType="Storage">
+        <include refid="storage_selector"/>
+        where 1=1
+        <if test="id != null">
+            and id = #{id}
+        </if>
+        <if test="prodId != null">
+            and prod_id = #{prodId}
+        </if>
+        <if test="repoId != null">
+            and repo_id = #{repoId}
+        </if>
+
+        <if test="actuallyNumber != null">
+            and actually_number = #{actuallyNumber}
+        </if>
+        <if test="modifyTime != null">
+            and modify_time = #{modifyTime}
+        </if>
+        limit #{start},#{limit}
+    </select>
+    <select id="findStorageCountByProdId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(id) from
+        <include refid="table_name"/>
+        where prod_id=#{prodId}
+
+    </select>
+
+    <!--=====================================================================================-->
+    <!--插入区-->
+    <insert id="saveStorage" parameterType="Storage" useGeneratedKeys="true" keyProperty="id">
+        insert into<include refid="table_name"/>(prod_id , repo_id , actually_number , modify_time)
+        values(#{prodId} , #{repoId} , #{actuallyNumber} , now())
+    </insert>
+    <!--===========================================================================================-->
+
+    <!--更新区-->
+    <update id="updateStorage" parameterType="Storage">
+        update
+        <include refid="table_name"/>
+        <set>
+            <if test="prodId !=null">
+                prod_id = #{prodId},
+            </if>
+            <if test="repoId !=null">
+                repo_id = #{repoId},
+            </if>
+
+            <if test="actuallyNumber !=null">
+                actually_number = #{actuallyNumber},
+            </if>
+            modify_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <!--================================================================================================-->
+    <!--删除区-->
+    <delete id="deleteStorageById" parameterType="java.lang.Integer">
+        delete from
+        <include refid="table_name"/>
+        where id = #{id}
+    </delete>
+    <!--更新区-->
+    <delete id="deleteStorageByProdId" parameterType="java.lang.String">
+        delete from
+        <include refid="table_name"/>
+        where prod_id = #{prodId}
+    </delete>
+    <delete id="deleteStorageByRepoId" parameterType="java.lang.Integer">
+        delete from
+        <include refid="table_name"/>
+        where repo_id=#{repoId}
+
+    </delete>
+    <!--===========================================================================-->
+</mapper>

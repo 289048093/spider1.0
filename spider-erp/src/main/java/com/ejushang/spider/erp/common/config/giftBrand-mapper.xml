@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.GiftBrandMapper">
+    <!-- 常用sql定义 -->
+    <sql id="giftBrand_selector">
+        SELECT gb.id,gb.brand_id,
+                gb.price_begin,gb.price_end,
+                gb.in_use,gb.create_time,gb.update_time,
+                gb.delete_time,gb.is_delete
+        FROM t_gift_brand gb
+    </sql>
+    <!-- ResultMap定义 -->
+    <resultMap id="GiftBrandResultMap" type="GiftBrand">
+        <id property="id" column="id"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="priceBegin" column="price_begin"/>
+        <result property="priceEnd" column="price_end"/>
+        <result property="inUse" column="in_use"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+
+    <!--查找全部-->
+    <select id="findAll" resultMap="GiftBrandResultMap" parameterType="GiftBrandQuery">
+        SELECT g.id,g.brand_id AS brandId,g.price_begin AS priceBegin,
+        g.price_end AS priceEnd,g.in_use AS inUse,
+        b.name AS brandName
+        FROM t_gift_brand g
+        LEFT JOIN t_brand b ON g.brand_id = b.id
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="giftBrandQuery.brandName != null and giftBrandQuery.brandName != ''">AND b.name LIKE "%"#{giftBrandQuery.brandName}"%"</if>
+            AND g.is_delete = 0
+        </trim>
+    </select>
+
+    <!--根据对象查询记录-->
+    <select id="findByQuery" parameterType="GiftBrandQuery" resultMap="GiftBrandResultMap">
+        <include refid="giftBrand_selector"/>
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="id != null">id = #{id}</if>
+            <if test="brandId != null">AND brand_id = #{brandId}</if>
+            <if test="priceBegin != null"><![CDATA[AND #{priceBegin} >= price_begin ]]></if>
+            <if test="priceEnd != null"><![CDATA[AND #{priceEnd} <= price_end ]]></if>
+            <if test="inUse != null">AND in_use = #{inUse}</if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <!--根据id查询记录-->
+    <select id="findGiftBrandById" parameterType="integer" resultMap="GiftBrandResultMap">
+      <include refid="giftBrand_selector"/> WHERE id = #{id}
+    </select>
+
+    <!-- 根据brandId查找记录 -->
+    <select id="findGiftBrandByBrandId" parameterType="integer" resultMap="GiftBrandResultMap">
+        <include refid="giftBrand_selector"/> WHERE is_delete = 0 AND brand_id = #{brandId}
+    </select>
+
+     <!-- 根据brandId查找其已经存在的奖励金额条件范围 -->
+    <select id="findBeginEndByBrandId" parameterType="integer" resultMap="GiftBrandResultMap">
+        <include refid="giftBrand_selector"/>
+        WHERE is_delete = 0 AND brand_id = #{brandId}
+    </select>
+
+    <!--增加一条记录-->
+    <insert id="saveGiftBrand" parameterType="GiftBrand" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_gift_brand(brand_id,price_begin,price_end,in_use,create_time)
+        VALUES (#{brandId},#{priceBegin},#{priceEnd},#{inUse},now())
+    </insert>
+
+    <!--根据id删除一条记录-->
+    <delete id="deleteGiftBrandById" parameterType="int">
+        UPDATE t_gift_brand SET is_delete = 1,delete_time = now() WHERE id = #{id}
+    </delete>
+
+    <!--根据对象修改记录-->
+    <update id="updateGiftBrandById" parameterType="GiftBrand">
+        UPDATE t_gift_brand
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="brandId != null">brand_id = #{brandId},</if>
+            <if test="priceBegin != null"> price_begin = #{priceBegin},</if>
+            <if test="priceEnd != null"> price_end = #{priceEnd},</if>
+            <if test="inUse != null"> in_use = #{inUse},</if>
+        </trim>
+        ,update_time=now() WHERE id = #{id}
+    </update>
+
+</mapper>

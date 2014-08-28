@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.GiftProdMapper">
+    <!-- 常用sql定义 -->
+    <sql id="giftProd_selector">
+        SELECT id,sell_prod_id,
+          gift_prod_id,gift_prod_count,
+          in_use,create_time,
+          update_time,delete_time,
+          is_delete
+        FROM t_gift_prod
+    </sql>
+
+    <!-- ResultMap定义 -->
+    <resultMap id="GiftProdResultMap" type="GiftProd">
+        <id property="id" column="id"/>
+        <result property="sellProdId" column="sell_prod_id"/>
+        <result property="giftProdId" column="gift_prod_id"/>
+        <result property="giftProdCount" column="gift_prod_count"/>
+        <result property="inUse" column="in_use"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+
+    <!--查询所有记录-->
+    <select id="findAll" resultMap="GiftProdResultMap" parameterType="GiftProdQuery">
+        SELECT g.id,g.sell_prod_id AS sellProdId,g.gift_prod_id AS giftProdId,
+        g.gift_prod_count AS giftProdCount,g.in_use AS inUse,
+        p.prod_name AS sellProdName,b.name AS brandName
+        FROM t_gift_prod g
+        LEFT JOIN t_product p ON g.sell_prod_id = p.id
+        LEFT JOIN t_brand b ON p.brand_id = b.id
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="giftProdQuery.prodNo != null and giftProdQuery.prodNo != ''">AND p.prod_no LIKE "%"#{giftProdQuery.prodNo}"%"</if>
+            <if test="giftProdQuery.prodName != null and giftProdQuery.prodName != ''">AND p.prod_name LIKE "%"#{giftProdQuery.prodName}"%"</if>
+            <if test="giftProdQuery.brandName != null and giftProdQuery.brandName != ''">AND b.name LIKE "%"#{giftProdQuery.brandName}"%"</if>
+            AND g.is_delete = 0
+        </trim>
+
+    </select>
+
+    <!--根据对象查询所有记录-->
+    <select id="findByQuery" parameterType="GiftProdQuery" resultMap="GiftProdResultMap">
+        <include refid="giftProd_selector"/>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id != null">id = #{id}</if>
+            <if test="sellProdId != null">AND sell_prod_id = #{sellProdId}</if>
+            <if test="giftProdId != null">AND gift_prod_id = #{giftProdId}</if>
+            <if test="inUse != null">AND in_use = #{inUse}</if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <select id="findBySellProdId" parameterType="java.lang.Integer" resultMap="GiftProdResultMap">
+        <include refid="giftProd_selector" />
+        WHERE is_delete = 0 AND sell_prod_id = #{sellProdId}
+    </select>
+    <select id="findByGiftProdId" parameterType="java.lang.Integer" resultMap="GiftProdResultMap">
+        <include refid="giftProd_selector" />
+        WHERE is_delete = 0 AND gift_prod_id = #{giftProdId}
+    </select>
+
+    <!--增加一条GiftProd记录-->
+    <insert id="saveGiftProd" parameterType="GiftProd">
+        INSERT INTO t_gift_prod(
+          sell_prod_id,gift_prod_id,gift_prod_count,in_use,create_time)
+        VALUES(#{sellProdId},#{giftProdId},#{giftProdCount},#{inUse},now())
+    </insert>
+
+    <!--根据id删除一条记录-->
+    <delete id="deleteGiftProdById" parameterType="integer">
+        UPDATE t_gift_prod SET is_delete = 1,delete_time = now() WHERE id = #{id}
+    </delete>
+
+    <!--根据对象修改记录-->
+    <update id="updateGiftProdById" parameterType="GiftProd">
+        UPDATE t_gift_prod
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sellProdId != null "> sell_prod_id = #{sellProdId},</if>
+            <if test="giftProdId != null "> gift_prod_id = #{giftProdId},</if>
+            <if test="giftProdCount != null "> gift_prod_count = #{giftProdCount},</if>
+            <if test="inUse != null"> in_use = #{inUse},</if>
+
+        </trim>
+        ,update_time = now()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

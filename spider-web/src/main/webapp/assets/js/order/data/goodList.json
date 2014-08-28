@@ -1,0 +1,16 @@
+{"success": true, "msg": "", "data": {
+    "list": [
+        {
+            "prodNo": "111",
+            "prodName": "111",
+            "prodCode": "111",
+            "count": null
+        },
+        {
+            "prodNo": "222",
+            "prodName": "111",
+            "prodCode": "2",
+            "count": null
+        }
+    ]
+}}

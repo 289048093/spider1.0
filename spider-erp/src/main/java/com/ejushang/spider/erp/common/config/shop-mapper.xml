@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ShopMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_shop</sql>
+
+    <!-- ResultMap定义 -->
+
+    <!-- 店铺新增 将id值赋予实体-->
+    <insert id="saveShop" parameterType="Shop" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="table_name"/>(shop_id,cat_id,nick,title,description,bulletin,pic_path,
+        item_score,service_score,delivery_score,de_express,enable_msg,msg_temp,msg_sign,out_platform_type,
+        create_time,update_time
+        )
+        VALUES (#{shopId},#{catId},#{nick},#{title},#{description},#{bulletin},#{picPath},
+        #{itemScore},#{serviceScore},#{deliveryScore},#{deExpress},#{enableMsg},#{msgTemp},#{msgSign},#{outPlatformType},
+        now(),now()
+        )
+    </insert>
+
+    <!-- 店铺更新 -->
+    <update id="updateShop" parameterType="Shop">
+        UPDATE <include refid="table_name"/>
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null and shopId != ''">
+                shop_id = #{shopId},
+            </if>
+            <if test="catId != null and catId != ''">
+                cat_id = #{catId},
+            </if>
+            <if test="nick != null and nick != ''">
+                nick = #{nick},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="bulletin != null and bulletin != ''">
+                bulletin = #{bulletin},
+            </if>
+            <if test="picPath != null and picPath != ''">
+                pic_path = #{picPath},
+            </if>
+            <if test="itemScore != null and itemScore != ''">
+                item_score = #{itemScore},
+            </if>
+            <if test="serviceScore != null and serviceScore != ''">
+                service_score = #{serviceScore},
+            </if>
+            <if test="deliveryScore != null and deliveryScore != ''">
+                delivery_score = #{deliveryScore},
+            </if>
+            <if test="deExpress != null and deExpress != ''">
+                de_express = #{deExpress},
+            </if>
+            <if test="enableMsg != null">
+                enable_msg = #{enableMsg},
+            </if>
+            <if test="msgTemp != null and msgTemp != ''">
+                msg_temp = #{msgTemp},
+            </if>
+            <if test="msgSign != null and msgSign != ''">
+                msg_sign = #{msgSign},
+            </if>
+            <if test="outPlatformType != null and outPlatformType != ''">
+                out_platform_type = #{outPlatformType},
+            </if>
+            update_time = now(),
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="shopId != null">
+                AND shop_id = #{shopId}
+            </if>
+        </trim>
+    </update>
+
+    <!-- 店铺删除 -->
+    <delete id="deleteShop" parameterType="Shop">
+        UPDATE <include refid="table_name"/> SET is_delete = 1 WHERE shop_id = #{shopId}
+    </delete>
+
+    <!-- 店铺分页查询 -->
+    <select id="findShopPageByQuery" parameterType="ShopQuery" resultType="Shop">
+        SELECT id,shop_id,cat_id,nick,title,description,bulletin,pic_path,item_score,service_score,delivery_score,
+        de_express,enable_msg,msg_temp,msg_sign,out_platform_type,create_time,update_time
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="shopQuery.shopName != null and shopQuery.shopName != ''">
+                AND title like "%"#{shopQuery.shopName}"%"
+            </if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <!-- 店铺查询 -->
+    <select id="findShopByQuery" parameterType="ShopQuery" resultType="Shop">
+        SELECT id,shop_id,cat_id,nick,title,description,bulletin,pic_path,item_score,service_score,delivery_score,
+        de_express,enable_msg,msg_temp,msg_sign,out_platform_type,create_time,update_time
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="shopName != null and shopName != ''">
+                AND title like "%"#{shopName}"%"
+            </if>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="shopId != null and shopId != ''">
+                AND shop_id = #{shopId}
+            </if>
+            <if test="catId != null and catId != ''">
+                AND cat_id = #{catId}
+            </if>
+            <if test="nick != null and nick != ''">
+                AND nick = #{nick}
+            </if>
+            <if test="title != null and title != ''">
+                AND title = #{title}
+            </if>
+            <if test="description != null and description != ''">
+                AND description = #{description}
+            </if>
+            <if test="bulletin != null and bulletin != ''">
+                AND bulletin = #{bulletin}
+            </if>
+            <if test="picPath != null and picPath != ''">
+                AND pic_path = #{picPath}
+            </if>
+            <if test="itemScore != null and itemScore != ''">
+                AND item_score = #{itemScore}
+            </if>
+            <if test="serviceScore != null and serviceScore != ''">
+                AND service_score = #{serviceScore}
+            </if>
+            <if test="deliveryScore != null and deliveryScore != ''">
+                AND delivery_score = #{deliveryScore}
+            </if>
+            <if test="deExpress != null and deExpress != ''">
+                AND de_express = #{deExpress}
+            </if>
+            <if test="enableMsg != null">
+                AND enable_msg = #{enableMsg}
+            </if>
+            <if test="msgTemp != null and msgTemp != ''">
+                AND msg_temp = #{msgTemp}
+            </if>
+            <if test="msgSign != null and msgSign != ''">
+                AND msg_sign = #{msgSign}
+            </if>
+            <if test="outPlatformType != null and outPlatformType != ''">
+                AND out_platform_type = #{outPlatformType}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime}
+            </if>
+            AND is_delete = 0
+        </trim>
+        <trim prefix="LIMIT" suffixOverrides=",">
+            <if test="start != null">
+                #{start},
+            </if>
+            <if test="limit != null">
+                #{limit},
+            </if>
+        </trim>
+    </select>
+
+    <!-- 店铺总条数查询 -->
+    <select id="getShopCountByQuery" parameterType="ShopQuery" resultType="integer">
+        SELECT COUNT(id)
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="shopName != null and shopName != ''">
+                AND title like "%"#{shopName}"%"
+            </if>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="shopId != null and shopId != ''">
+                AND shop_id = #{shopId}
+            </if>
+            <if test="catId != null and catId != ''">
+                AND cat_id = #{catId}
+            </if>
+            <if test="nick != null and nick != ''">
+                AND nick = #{nick}
+            </if>
+            <if test="title != null and title != ''">
+                AND title = #{title}
+            </if>
+            <if test="description != null and description != ''">
+                AND description = #{description}
+            </if>
+            <if test="bulletin != null and bulletin != ''">
+                AND bulletin = #{bulletin}
+            </if>
+            <if test="picPath != null and picPath != ''">
+                AND pic_path = #{picPath}
+            </if>
+            <if test="itemScore != null and itemScore != ''">
+                AND item_score = #{itemScore}
+            </if>
+            <if test="serviceScore != null and serviceScore != ''">
+                AND service_score = #{serviceScore}
+            </if>
+            <if test="deliveryScore != null and deliveryScore != ''">
+                AND delivery_score = #{deliveryScore}
+            </if>
+            <if test="deExpress != null and deExpress != ''">
+                AND de_express = #{deExpress}
+            </if>
+            <if test="enableMsg != null">
+                AND enable_msg = #{enableMsg}
+            </if>
+            <if test="msgTemp != null and msgTemp != ''">
+                AND msg_temp = #{msgTemp}
+            </if>
+            <if test="msgSign != null and msgSign != ''">
+                AND msg_sign = #{msgSign}
+            </if>
+            <if test="outPlatformType != null and outPlatformType != ''">
+                AND out_platform_type = #{outPlatformType}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime}
+            </if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <select id="findShopByShopId" parameterType="int" resultType="Shop">
+       select * from t_shop where shop_id=#{shopId}
+    </select>
+
+    <select id="findAllShop"  resultType="Shop">
+       select * from t_shop where is_delete=0
+    </select>
+</mapper>

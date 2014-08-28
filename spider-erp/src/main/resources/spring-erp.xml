@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!-- 启动扫描 -->
+    <context:component-scan base-package="com.ejushang.spider">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <!-- 启用CGliB -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+
+
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClassName}" />
+        <property name="jdbcUrl" value="${jdbc.url.spider}" />
+        <property name="user" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+
+        <!-- http://www.mchange.com/projects/c3p0/index.html -->
+        <property name="maxPoolSize" value="50" />
+        <property name="minPoolSize" value="5" />
+        <property name="initialPoolSize" value="8" />
+        <property name="acquireIncrement" value="5" />
+        <property name="maxIdleTime" value="300" />
+        <property name="idleConnectionTestPeriod" value="300" />
+        <property name="maxStatements" value="200"/>
+        <property name="checkoutTimeout" value="30000"/>
+
+        <property name="breakAfterAcquireFailure" value="true" />
+        <property name="testConnectionOnCheckin" value="true" />
+        <property name="preferredTestQuery" value="select 1"/>
+    </bean>
+
+    <bean id="dataSourceTb" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc_tb.driverClassName}" />
+        <property name="jdbcUrl" value="${jdbc_tb.url.spider}" />
+        <property name="user" value="${jdbc_tb.username}" />
+        <property name="password" value="${jdbc_tb.password}" />
+
+        <!-- http://www.mchange.com/projects/c3p0/index.html -->
+        <property name="maxPoolSize" value="50" />
+        <property name="minPoolSize" value="5" />
+        <property name="initialPoolSize" value="8" />
+        <property name="acquireIncrement" value="5" />
+        <property name="maxIdleTime" value="300" />
+        <property name="idleConnectionTestPeriod" value="300" />
+        <property name="maxStatements" value="200"/>
+        <property name="checkoutTimeout" value="30000"/>
+
+        <property name="breakAfterAcquireFailure" value="true" />
+        <property name="testConnectionOnCheckin" value="true" />
+        <property name="preferredTestQuery" value="select 1"/>
+    </bean>
+
+    <!--　事务管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- 注解控制事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis.xml" />
+        <property name="mapperLocations" value="classpath*:com/ejushang/spider/**/config/*mapper.xml" />
+    </bean>
+
+    <bean id="sqlSessionFactoryTb" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSourceTb"/>
+        <property name="configLocation" value="classpath:mybatis.xml" />
+        <property name="mapperLocations" value="classpath*:com/ejushang/spider/**/configtb/*mapper.xml" />
+    </bean>
+
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ejushang.spider.**.mapper" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <bean id="mapperScannerConfigurerTb" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ejushang.spider.**.mappertb" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryTb"/>
+    </bean>
+
+    <!--
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+    -->
+
+    <bean   class="com.ejushang.spider.erp.util.ApplicationContextUtils"/>
+
+    <bean class="com.ejushang.spider.erp.service.delivery.RequestLogisticsInfo">
+        <!-- 第三方物流查询平台的接口地址 -->
+        <property name="thirdUrl" value="http://www.kuaidi100.com/poll"/>
+        <!-- 与第三方物流查询平台协商好的 key(用来校验身份) -->
+        <property name="key" value="yiJuShang0924"/>
+        <!-- 第三方向我方推送数据的回调地址 -->
+        <property name="callBackUrl" value="http://121.196.136.40/logistics/back"/>
+
+        <!-- 上面三个必须设置! -->
+
+        <!-- 线上才需要往 kuaidi100 去请求 -->
+        <property name="online" value="false"/>
+        <!--<property name="online" value="${online}"/>-->
+    </bean>
+
+    <!-- 使用注解执行定时任务 -->
+    <context:annotation-config />
+    <!-- spring扫描注解的配置 ： 上面已配置 -->
+
+    <!-- 开启这个配置，spring才能识别@Scheduled注解   -->
+    <task:scheduler id="qbScheduler" pool-size="10" />
+    <task:annotation-driven scheduler="qbScheduler" mode="proxy" />
+</beans>

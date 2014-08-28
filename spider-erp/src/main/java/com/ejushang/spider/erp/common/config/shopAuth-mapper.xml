@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ejushang.spider.erp.common.mapper.ShopAuthMapper">
+    <!-- 常用sql定义 -->
+    <sql id="table_name">t_shop_auth</sql>
+
+    <!-- ResultMap定义 -->
+
+    <!-- 店铺授权新增 将id值赋予实体-->
+    <insert id="saveShopAuth" parameterType="ShopAuth" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="table_name"/>(shop_id,session_key,token_type,expires_in,refresh_token,
+        re_expires_in,r1_expires_in,r2_expires_in,w1_expires_in,w2_expires_in,user_nick,user_id,out_platform_type,
+        create_time,update_time
+        )
+        VALUES (#{shopId},#{sessionKey},#{tokenType},#{expiresIn},#{refreshToken},#{reExpiresIn},#{r1ExpiresIn},
+        #{r2ExpiresIn},#{w1ExpiresIn},#{w2ExpiresIn},#{userNick},#{userId},#{outPlatformType},
+        now(),now()
+        )
+    </insert>
+
+    <!-- 店铺授权更新 -->
+    <update id="updateShopAuth" parameterType="ShopAuth">
+        UPDATE <include refid="table_name"/>
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null and shopId != ''">
+                shop_id = #{shopId},
+            </if>
+            <if test="sessionKey != null and sessionKey != ''">
+                session_key = #{sessionKey},
+            </if>
+            <if test="tokenType != null and tokenType != ''">
+                token_type = #{tokenType},
+            </if>
+            <if test="expiresIn != null">
+                expires_in = #{expiresIn},
+            </if>
+            <if test="refreshToken != null and refreshToken != ''">
+                refresh_token = #{refreshToken},
+            </if>
+            <if test="reExpiresIn != null">
+                re_expires_in = #{reExpiresIn},
+            </if>
+            <if test="r1ExpiresIn != null">
+                r1_expires_in = #{r1ExpiresIn},
+            </if>
+            <if test="r2ExpiresIn != null">
+                r2_expires_in = #{r2ExpiresIn},
+            </if>
+            <if test="w1ExpiresIn != null">
+                w1_expires_in = #{w1ExpiresIn},
+            </if>
+            <if test="w2ExpiresIn != null">
+                w2_expires_in = #{w2ExpiresIn},
+            </if>
+            <if test="userNick != null and userNick != ''">
+                user_nick = #{userNick},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="outPlatformType != null and outPlatformType != ''">
+                out_platform_type = #{outPlatformType},
+            </if>
+            update_time = now(),
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="shopId != null">
+                AND shop_id = #{shopId}
+            </if>
+        </trim>
+    </update>
+
+    <!-- 店铺授权删除 -->
+    <delete id="deleteShopAuth" parameterType="ShopAuth">
+        UPDATE <include refid="table_name"/> SET is_delete = 1 WHERE shop_id = #{shopId}
+    </delete>
+
+    <!-- 店铺授权查询 -->
+    <select id="findShopAuthByQuery" parameterType="ShopAuthQuery" resultType="ShopAuth">
+        SELECT id,shop_id,session_key,token_type,expires_in,refresh_token,re_expires_in,r1_expires_in,r2_expires_in,
+        w1_expires_in,w2_expires_in,user_nick,user_id,out_platform_type,create_time,update_time
+        FROM <include refid="table_name"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="shopId != null and shopId != ''">
+                AND shop_id = #{shopId}
+            </if>
+            <if test="sessionKey != null and sessionKey != ''">
+                AND session_key = #{sessionKey}
+            </if>
+            <if test="tokenType != null and tokenType != ''">
+                AND token_type = #{tokenType}
+            </if>
+            <if test="expiresIn != null">
+                AND expires_in = #{expiresIn}
+            </if>
+            <if test="refreshToken != null and refreshToken != ''">
+                AND refresh_token = #{refreshToken}
+            </if>
+            <if test="reExpiresIn != null">
+                AND re_expires_in = #{reExpiresIn}
+            </if>
+            <if test="r1ExpiresIn != null">
+                AND r1_expires_in = #{r1ExpiresIn}
+            </if>
+            <if test="r2ExpiresIn != null">
+                AND r2_expires_in = #{r2ExpiresIn}
+            </if>
+            <if test="w1ExpiresIn != null">
+                AND w1_expires_in = #{w1ExpiresIn}
+            </if>
+            <if test="w2ExpiresIn != null">
+                AND w2_expires_in = #{w2ExpiresIn}
+            </if>
+            <if test="userNick != null and userNick != ''">
+                AND user_nick = #{userNick}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND user_id = #{userId}
+            </if>
+            <if test="outPlatformType != null and outPlatformType != ''">
+                AND out_platform_type = #{outPlatformType}
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime}
+            </if>
+            AND is_delete = 0
+        </trim>
+    </select>
+
+    <!-- 批量查询店铺授权信息 -->
+    <select id="findShopAuthByShopList" resultType="ShopAuth">
+        SELECT id,shop_id,session_key,token_type,expires_in,refresh_token,re_expires_in,r1_expires_in,r2_expires_in,
+        w1_expires_in,w2_expires_in,user_nick,user_id,out_platform_type,create_time,update_time
+        FROM <include refid="table_name"/>
+        WHERE shop_id in
+        <foreach collection="list" item="shop" open="(" close=")" separator="," index="idx">
+            #{shop.shopId}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <!-- 处理静态资源 -->
+    <mvc:annotation-driven/>
+    <mvc:resources mapping="/assets/**" location="assets/"/>
+    <mvc:resources mapping="/extjs/**" location="extjs/"/>
+    <mvc:resources mapping="/static/**" location="static/"/>
+    <mvc:resources mapping="/upload/**" location="upload/"/>
+    <mvc:resources mapping="/favicon.ico" location="favicon.ico"/>
+    <mvc:resources mapping="/*.html" location="*"/>
+
+    <!--<mvc:resources mapping="/*" location="/"/>-->
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/assets/**" />
+            <mvc:exclude-mapping path="/extjs/**" />
+            <mvc:exclude-mapping path="/static/**" />
+            <mvc:exclude-mapping path="/upload/**" />
+            <mvc:exclude-mapping path="/captcha.action" />
+            <mvc:exclude-mapping path="/favicon.ico" />
+            <mvc:exclude-mapping path="/role/user/resource" />
+            <mvc:exclude-mapping path="/login.html" />
+            <mvc:exclude-mapping path="/index.html" />
+            <mvc:exclude-mapping path="/logout.action" />
+            <bean id="businessLogInteceptor" class="com.ejushang.spider.log.springmvc.BusinessLogInteceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/login.html"/>
+            <bean id="loginInteceptor" class="com.ejushang.spider.web.common.LoginInteceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 注解探测器 -->
+    <context:component-scan base-package="com.ejushang.spider.web.controller"/>
+
+    <!-- 视图解析器 -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 使用JSP页面进行输出 -->
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <!-- 这个配置是配置JSP页面的位置 -->
+        <property name="prefix" value="/WEB-INF/"/>
+        <!-- 指定了表示层的后缀 -->
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+
+    <!-- 异常信息处理类 -->
+    <bean class="com.ejushang.spider.web.common.SpiderMappingExceptionResolver">
+        <property name="order" value="0" />
+    </bean>
+
+    <!-- 处理文件上传处理 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="UTF-8"/>
+</beans>

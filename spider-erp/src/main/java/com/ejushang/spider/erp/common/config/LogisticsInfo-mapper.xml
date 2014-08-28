@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ejushang.spider.erp.common.mapper.LogisticsInfoMapper">
+
+    <sql id="logistics_selector">
+        select id, order_no, express_no, express_company, send_to, express_info,
+        express_status, first_time, latest_time, was_request, create_time, update_time
+        from t_logistics_info
+    </sql>
+
+    <insert id="saveLogistics" useGeneratedKeys="true" keyProperty="id">
+         insert into t_logistics_info(order_no, express_no, express_company, send_to, express_info, create_time)
+         values(#{orderNo}, #{expressNo}, #{expressCompany}, #{sendTo}, #{expressInfo}, now())
+    </insert>
+
+    <select id="findLogisticsByNoes" resultType="com.ejushang.spider.domain.LogisticsInfo"
+            parameterType="com.ejushang.spider.domain.LogisticsInfo">
+        <include refid="logistics_selector"/>
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo}
+            </if>
+            <if test="expressNo != null and expressNo != ''">
+                AND express_no = #{expressNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findNotSuccessLogisticsByLaTestTime" resultType="java.util.Map">
+        select order_no as orderNo, express_no as expressNo, express_company as expressCompany,
+        DATE_FORMAT(latest_time, '%Y-%m-%d %H:%i:%s') as latestTime, send_to as sendTo
+        from t_logistics_info
+        where express_info is not null and express_info != '' and express_status = 0
+        <![CDATA[ and latest_time <= DATE_SUB(now(), interval #{hourCount} hour) ]]>
+        order by latest_time
+    </select>
+
+    <select id="findNotSuccessLogisticsByFirstTime" resultType="java.util.Map">
+        select order_no as orderNo, express_no as expressNo, express_company as expressCompany,
+        DATE_FORMAT(first_time, '%Y-%m-%d %H:%i:%s') as firstTime, send_to as sendTo
+        from t_logistics_info
+        where express_info is not null and express_info != '' and express_status = 0
+        <![CDATA[ and first_time <= DATE_SUB(now(), interval #{hourCount} hour) ]]>
+        order by first_time
+    </select>
+
+    <update id="updateLogisticsInfo" parameterType="com.ejushang.spider.domain.LogisticsInfo">
+        update t_logistics_info
+        set update_time = now()
+        <if test="wasRequest != null">, was_request = #{wasRequest}</if>
+        <if test="firstTime != null">, first_time = #{firstTime}</if>
+        <if test="latestTime != null">, latest_time = #{latestTime}</if>
+        <if test="expressInfo != null and expressInfo != ''">, express_info = #{expressInfo}</if>
+        <if test="expressStatus != null">, express_status = #{expressStatus}</if>
+        where express_no = #{expressNo}
+    </update>
+
+    <delete id="deleteLogisticsInfo">
+        delete from t_logistics_info where id = #{id}
+    </delete>
+
+    <select id="findLogisticsByExpressNos" resultType="com.ejushang.spider.domain.LogisticsInfo">
+        <include refid="logistics_selector"/>
+        WHERE express_no in
+        <foreach collection="list" item="expressNo" open="(" close=")" separator="," index="idx">
+            #{expressNo}
+        </foreach>
+    </select>
+
+</mapper>
